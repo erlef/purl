@@ -1,5 +1,6 @@
 # Purl
 
+[![EEF Security WG project](https://img.shields.io/badge/EEF-Security-black)](https://github.com/erlef/security-wg)
 [![hex.pm badge](https://img.shields.io/badge/Package%20on%20hex.pm-informational)](https://hex.pm/packages/purl)
 [![Documentation badge](https://img.shields.io/badge/Documentation-ff69b4)][docs]
 [![.github/workflows/branch_main.yml](https://github.com/erlef/purl/actions/workflows/branch_main.yml/badge.svg)](https://github.com/erlef/purl/actions/workflows/branch_main.yml)
