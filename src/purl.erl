@@ -41,8 +41,11 @@ https://github.com/package-url/purl-spec
 """).
 ?MODULEDOC(#{since => <<"0.3.0">>}).
 
+-behaviour(application).
+
 -export_type([
     parse_error/0,
+    validation_field/0,
     type/0,
     namespace_segment/0,
     namespace/0,
@@ -53,10 +56,35 @@ https://github.com/package-url/purl-spec
     qualifiers/0,
     subpath_segment/0,
     subpath/0,
+    type_component_definition/0,
+    type_specification/0,
     t/0
 ]).
 
--export([to_binary/1, to_uri/1, new/1, from_resource_uri/1, from_resource_uri/2]).
+-export([
+    from_resource_uri/1,
+    from_resource_uri/2,
+    lookup_type/1,
+    new/1,
+    register_type/1,
+    start/2,
+    stop/1,
+    to_binary/1,
+    to_uri/1,
+    unregister_type/1
+]).
+
+?DOC(false).
+start(_StartType, _StartArgs) ->
+    purl_sup:start_link().
+
+?DOC(false).
+stop(_State) ->
+    ok.
+
+?DOC(#{since => <<"0.4.0">>}).
+-type validation_field() ::
+    namespace | name | version | subpath | qualifiers | {qualifiers, binary()}.
 
 ?DOC(#{since => <<"0.3.0">>}).
 -type parse_error() ::
@@ -64,7 +92,8 @@ https://github.com/package-url/purl-spec
         {invalid_field, Field :: atom(), Value :: binary()}
         | {duplicate_qualifier, Key :: binary()}
         | {invalid_scheme, Scheme :: binary() | undefined}
-        | {special_case_failed, Message :: binary()}}
+        | {type_validation, Type :: type(), Field :: validation_field(), Value :: binary(),
+            Reason :: binary()}}
     | uri_string:error().
 
 ?DOC("""
@@ -178,6 +207,91 @@ extra subpath within a package, relative to the package root
 -type subpath() :: [subpath_segment()].
 
 ?DOC("""
+type specification
+
+See: https://github.com/package-url/purl-spec/blob/main/schemas/purl-type-definition.schema.json
+
+## Example
+
+```erlang
+#{
+    '$schema' => <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+    '$id' => <<"https://packageurl.org/types/hex-definition.json">>,
+    type => <<"hex">>,
+    type_name => <<"Hex">>
+    %% ...
+}
+```
+""").
+-type type_specification() :: #{
+    '$schema' := binary(),
+    '$id' := binary(),
+    type := type(),
+    type_name := binary(),
+    description := binary(),
+    repository := #{
+        use_repository := boolean(),
+        default_repository_url => binary(),
+        note => binary()
+    },
+    namespace_definition := #{
+        requirement := binary(),
+        permitted_characters => binary(),
+        case_sensitive => boolean(),
+        normalization_rules => [binary()],
+        native_name => binary(),
+        note => binary()
+    },
+    name_definition := #{
+        requirement := binary(),
+        permitted_characters => binary(),
+        case_sensitive => boolean(),
+        normalization_rules => [binary()],
+        native_name => binary(),
+        note => binary()
+    },
+    version_definition => #{
+        requirement := binary(),
+        permitted_characters => binary(),
+        case_sensitive => boolean(),
+        normalization_rules => [binary()],
+        native_name => binary(),
+        note => binary()
+    },
+    qualifiers_definition => [
+        #{
+            key := qualifier_key(),
+            requirement => binary(),
+            description := binary(),
+            default_value => qualifier_value(),
+            native_name => binary()
+        }
+    ],
+    subpath_definition => #{
+        requirement := binary(),
+        permitted_characters => binary(),
+        case_sensitive => boolean(),
+        normalization_rules => [binary()],
+        native_name => binary(),
+        note => binary()
+    },
+    examples := [binary()],
+    note => binary(),
+    reference_urls => [binary()]
+}.
+
+?DOC(false).
+-type type_component_definition() :: #{
+    permitted_characters => binary(),
+    case_sensitive => boolean(),
+    normalization_rules => [binary()],
+    native_name => binary(),
+    note => binary(),
+    %% Ignore Rest
+    atom() => term()
+}.
+
+?DOC("""
 Package URL record
 """).
 ?DOC(#{since => <<"0.3.0">>}).
@@ -236,8 +350,11 @@ Creates a new purl struct from a `Purl`, `URI` or string.
     Purl :: uri_string:uri_string() | uri_string:uri_map() | t().
 new(Purl) ->
     maybe
-        {ok, Parsed} ?= purl_parser:parse(Purl),
-        purl_special_case:apply(Parsed)
+        {ok, #purl{type = Type} = Parsed} ?= purl_parser:parse(Purl),
+        TypeSpecification = lookup_type(Type),
+        Normalized = purl_type_normalizer:normalize(Parsed, TypeSpecification),
+        ok ?= purl_type_validator:validate(Normalized, TypeSpecification),
+        {ok, Normalized}
     end.
 
 ?DOC("""
@@ -265,3 +382,84 @@ See `from_resource_uri/2`.
 -spec from_resource_uri(Uri) -> {ok, t()} | error when
     Uri :: uri_string:uri_map() | uri_string:uri_string().
 from_resource_uri(Uri) -> from_resource_uri(Uri, undefined).
+
+?DOC("""
+Register Custom PURL Type
+
+## Examples
+
+```
+> purl:register_type(
+    #{
+      '$schema' => <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+      '$id' => <<"https://acme.com/type.json">>,
+      type => <<"acme-package">>,
+      type_name => <<"Acme Package">>,
+      description => <<"Acme Package Type">>,
+      repository => #{use_repository => false},
+      namespace_definition => #{requirement => <<"optional">>},
+      examples => [<<"pkg:acme/acme-package@1.0.0">>]
+    }
+  ).
+ok
+```
+""").
+?DOC(#{since => <<"0.4.0">>}).
+-spec register_type(Specification :: type_specification()) -> ok.
+register_type(Specification) -> purl_type_registry:add(Specification).
+
+?DOC("""
+Unregister Custom PURL Type
+
+## Examples
+
+```> purl:unregister_type(<<"acme-package">>).
+ok
+```
+""").
+?DOC(#{since => <<"0.4.0">>}).
+-spec unregister_type(Type :: type()) -> ok.
+unregister_type(Type) -> purl_type_registry:delete(Type).
+
+?DOC("""
+Lookup Type Specification
+
+## Examples
+```
+> purl:lookup_type(<<"hex">>).
+#{type => <<"hex">>,description => <<"Hex packages">>,
+  repository =>
+      #{default_repository_url => <<"https://repo.hex.pm">>,
+        use_repository => true},
+  namespace_definition =>
+      #{requirement => <<"optional">>,case_sensitive => false,
+        normalization_rules => [],
+        note =>
+            <<"The namespace is optional; it may be used to specify the organization for private packages on hex.pm. It is not case sensitive and must be lowercased.">>,
+        native_name => <<"organization for private packages">>},
+  name_definition =>
+      #{requirement => <<"required">>,case_sensitive => false,
+        normalization_rules => [],
+        note => <<"The name is not case sensitive and must be lowercased.">>,
+        native_name => <<"name">>},
+  version_definition =>
+      #{requirement => <<"optional">>,case_sensitive => true,
+        normalization_rules => [],native_name => <<"version">>},
+  subpath_definition =>
+      #{requirement => <<"optional">>,case_sensitive => true,
+        normalization_rules => []},
+  qualifiers_definition => [],
+  '$schema' =>
+      <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+  '$id' => <<"https://packageurl.org/types/hex-definition.json">>,
+  type_name => <<"Hex">>,
+  examples =>
+      [<<"pkg:hex/jason@1.1.2">>,<<"pkg:hex/acme/foo@2.3.">>,
+       <<"pkg:hex/phoenix_html@2.13.3#priv/static/phoenix_html.js">>,
+       <<"pkg:hex/bar@1.2.3", 63, "repository_url=https://myrepo.example.com">>],
+  reference_urls => []}
+```
+""").
+?DOC(#{since => <<"0.4.0">>}).
+-spec lookup_type(Type :: type()) -> type_specification().
+lookup_type(Type) -> purl_type_registry:lookup(Type).

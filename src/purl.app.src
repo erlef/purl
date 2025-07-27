@@ -5,6 +5,7 @@
     {applications, [kernel, stdlib]},
     {env, []},
     {modules, []},
+    {mod, {purl, []}},
     {licenses, ["Apache-2.0"]},
     {links, []}
 ]}.
