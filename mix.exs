@@ -54,13 +54,15 @@ defmodule Purl.MixProject do
         "mix.exs",
         "README*",
         "rebar.config",
-        "src"
+        "src",
+        "priv/spec/*LICENSE",
+        "priv/spec/types"
       ]
     }
   end
 
   def application do
-    []
+    [mod: {:purl, []}]
   end
 
   defp docs do

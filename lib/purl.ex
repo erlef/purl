@@ -37,7 +37,7 @@ defmodule Purl do
   alias Purl.Error.DuplicateQualifier
   alias Purl.Error.InvalidField
   alias Purl.Error.InvalidScheme
-  alias Purl.Error.SpecialCaseFailed
+  alias Purl.Error.TypeValidationFailed
 
   require Record
 
@@ -49,7 +49,7 @@ defmodule Purl do
           | InvalidField.t()
           | DuplicateQualifier.t()
           | InvalidScheme.t()
-          | SpecialCaseFailed.t()
+          | TypeValidationFailed.t()
 
   @typedoc """
   the package "type" or package "protocol" such as `maven`, `npm`, `nuget`,
@@ -300,8 +300,8 @@ defmodule Purl do
   defp purl_response({:error, {:invalid_scheme, scheme}}), do: {:error, InvalidScheme.exception(scheme: scheme)}
   defp purl_response({:error, {:duplicate_qualifier, key}}), do: {:error, DuplicateQualifier.exception(key: key)}
 
-  defp purl_response({:error, {:special_case_failed, message}}),
-    do: {:error, SpecialCaseFailed.exception(message: message)}
+  defp purl_response({:error, {:type_validation, type, field, value, reason}}),
+    do: {:error, TypeValidationFailed.exception(type: type, field: field, value: value, reason: reason)}
 
   defp purl_response({:error, reason, term}),
     do: {:error, %URI.Error{action: :parse, reason: reason, part: Kernel.to_string(term)}}
