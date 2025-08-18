@@ -102,7 +102,7 @@ jobs:
       - run: rebar3 fmt --check
 
   eunit:
-    name: rebar3 eunit (${{ matrix.otp }})
+    name: rebar3 eunit (${{ matrix.name }})
 
     needs: ["detectToolVersions"]
 
@@ -112,11 +112,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Lowest Supported
           - otp: "25.3"
+            name: "lowest"
             unstable: false
+          # Latest Supported
           - otp: "${{ needs.detectToolVersions.outputs.otpVersion }}"
+            name: "latest"
             unstable: false
+          # Test Master
           - otp: "master"
+            name: "master"
             unstable: true
 
     steps:
@@ -142,7 +148,7 @@ jobs:
         continue-on-error: ${{ matrix.unstable }}
 
   mix_test:
-    name: mix test (${{ matrix.elixir }})
+    name: mix test (${{ matrix.name }})
 
     needs: ["detectToolVersions"]
 
@@ -152,13 +158,25 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - otp: '25.3'
-            elixir: '1.14'
+          # Lowest Supported
+          - otp: "25.3"
+            elixir: "1.14"
+            name: "lowest"
             runs-on: ubuntu-latest
-          - otp: '${{ needs.detectToolVersions.outputs.otpVersion }}'
-            elixir: '${{ needs.detectToolVersions.outputs.elixirVersion }}'
+            unstable: false
+          # Latest Supported
+          - otp: "${{ needs.detectToolVersions.outputs.otpVersion }}"
+            elixir: "${{ needs.detectToolVersions.outputs.elixirVersion }}"
+            name: "latest"
             runs-on: ubuntu-latest
-            enable_coverage_export: 'true'
+            enable_coverage_export: "true"
+            unstable: false
+          # Test Main
+          - otp: "${{ needs.detectToolVersions.outputs.otpVersion }}"
+            elixir: "main"
+            name: "main"
+            runs-on: ubuntu-latest
+            unstable: true
 
     env:
       MIX_ENV: test
@@ -192,10 +210,12 @@ jobs:
         if: ${{ matrix.enable_coverage_export == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: ${{ matrix.unstable }}
       - run: mix test
         if: ${{ !matrix.enable_coverage_export }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: ${{ matrix.unstable }}
 
   lint:
     name: rebar3 lint
