@@ -11,7 +11,7 @@ defmodule Purl.MixProject do
     [
       app: :purl,
       version: to_string(@props[:vsn]),
-      elixir: "~> 1.14",
+      elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       docs: docs(),
