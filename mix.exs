@@ -24,14 +24,6 @@ defmodule Purl.MixProject do
           else
             []
           end,
-      preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.html": :test,
-        "coveralls.json": :test,
-        "coveralls.post": :test,
-        "coveralls.xml": :test
-      ],
       package: package()
     ]
   end
@@ -61,6 +53,19 @@ defmodule Purl.MixProject do
 
   def application do
     []
+  end
+
+  def cli do
+    [
+      preferred_envs: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.html": :test,
+        "coveralls.json": :test,
+        "coveralls.post": :test,
+        "coveralls.xml": :test
+      ]
+    ]
   end
 
   defp docs do
