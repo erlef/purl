@@ -2,10 +2,9 @@
 
 -feature(maybe_expr, enable).
 
--include("internal/doc.hrl").
 -include("purl.hrl").
 
-?MODULEDOC(false).
+-moduledoc false.
 
 -export([from_uri/2]).
 

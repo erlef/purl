@@ -2,10 +2,9 @@
 
 -feature(maybe_expr, enable).
 
--include("internal/doc.hrl").
 -include("purl.hrl").
 
-?MODULEDOC(false).
+-moduledoc false.
 
 -export([compose_uri/1]).
 
@@ -44,7 +43,7 @@ encode_qualifiers(Qualifiers) when Qualifiers =:= #{} ->
 encode_qualifiers(Qualifiers) ->
     Encoded = lists:map(
         fun({Key, Value}) ->
-            [Key, "=", encode(Value, "&+")]
+            [Key, "=", encode(Value, "&+/,")]
         end,
         maps:to_list(Qualifiers)
     ),
@@ -71,6 +70,6 @@ encode(Data, AdditionalCodepoints) ->
     AllowedCharacters = uri_string:allowed_characters(),
     {reserved, Reserved} = lists:keyfind(reserved, 1, AllowedCharacters),
     {unreserved, Unreserved} = lists:keyfind(unreserved, 1, AllowedCharacters),
-    PurlUnsafe = "#?@[]",
+    PurlUnsafe = "#?@[]+",
     UnescapedCharacters = ((Reserved ++ Unreserved) -- PurlUnsafe) -- AdditionalCodepoints,
     uri_string:quote(Data, UnescapedCharacters).
