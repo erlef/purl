@@ -9,7 +9,6 @@ init_test() ->
 
 -if(?OTP_RELEASE >= 27).
 doctest_test() ->
-    {ok, _} = application:ensure_all_started(purl),
     doctest:module(purl, #{
         records => [{purl, record_info(fields, purl)}]
     }).

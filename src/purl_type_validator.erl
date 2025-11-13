@@ -2,8 +2,7 @@
 
 -feature(maybe_expr, enable).
 
--include("internal/doc.hrl").
-?MODULEDOC(false).
+-moduledoc false.
 
 -include("purl.hrl").
 

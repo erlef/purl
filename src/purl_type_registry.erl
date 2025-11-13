@@ -4,8 +4,7 @@
 
 -behaviour(gen_server).
 
--include("internal/doc.hrl").
-?MODULEDOC(false).
+-moduledoc false.
 
 -include_lib("kernel/include/file.hrl").
 

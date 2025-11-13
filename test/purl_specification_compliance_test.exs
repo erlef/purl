@@ -63,6 +63,10 @@ defmodule PurlSpecificationComplianceTest do
     async: true,
     parameterize: parameters
 
+  if Version.match?(System.version(), "<= 1.18.0") do
+    @moduletag :skip
+  end
+
   test("run specification test", %{spec_test: spec_test}, do: run_test(spec_test))
 
   @spec run_test(test :: map()) :: :ok

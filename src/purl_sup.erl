@@ -1,8 +1,7 @@
 -module(purl_sup).
 -behaviour(supervisor).
 
--include("internal/doc.hrl").
-?MODULEDOC(false).
+-moduledoc false.
 
 -export([start_link/0, init/1]).
 

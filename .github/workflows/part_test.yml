@@ -113,7 +113,7 @@ jobs:
       matrix:
         include:
           # Lowest Supported
-          - otp: "26.0"
+          - otp: "27.0"
             name: "lowest"
             unstable: false
           # Latest Supported
@@ -161,8 +161,8 @@ jobs:
       matrix:
         include:
           # Lowest Supported
-          - otp: "26.0"
-            elixir: "1.15"
+          - otp: "27.0"
+            elixir: "1.17"
             name: "lowest"
             runs-on: ubuntu-latest
             unstable: false

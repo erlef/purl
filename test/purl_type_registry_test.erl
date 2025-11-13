@@ -4,7 +4,6 @@
 
 -if(?OTP_RELEASE >= 27).
 doctest_test() ->
-    {ok, _} = application:ensure_all_started(purl),
     doctest:module(purl_type_registry, #{}).
 -endif.
 
