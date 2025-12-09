@@ -101,3 +101,34 @@ add_lookup_delete_test() ->
     ),
 
     ok.
+
+list_types_test() ->
+    file:delete(filename:join([code:priv_dir(purl), "data", "list_types_test.dets"])),
+
+    {ok, _} = purl_type_registry:start_link([{name, list_types_test}]),
+
+    % Initially should have pre-loaded types from JSON files
+    InitialTypes = purl_type_registry:list_types(list_types_test),
+    ?assert(is_list(InitialTypes)),
+    ?assert(lists:member(<<"hex">>, InitialTypes)),
+
+    % Add a custom type
+    CustomType = <<"mytype">>,
+    CustomSpec = #{
+        type => CustomType,
+        type_name => <<"My Type">>,
+        description => <<"Custom type for testing">>
+    },
+
+    ?assertEqual(ok, purl_type_registry:add(list_types_test, CustomSpec)),
+
+    % Verify the custom type is in the list
+    UpdatedTypes = purl_type_registry:list_types(list_types_test),
+    ?assert(lists:member(CustomType, UpdatedTypes)),
+
+    % Test default registry function
+    ?assertEqual(
+        purl_type_registry:list_types(), purl_type_registry:list_types(purl_type_registry)
+    ),
+
+    ok.

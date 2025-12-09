@@ -49,6 +49,8 @@ normalize_subpath(#purl{subpath = Subpath} = Purl, #{subpath_definition := Subpa
 -spec normalize_component(
     Part :: binary(), ComponentDefinition :: purl:type_component_definition()
 ) -> binary().
+normalize_component(undefined, _ComponentDefinition) ->
+    undefined;
 normalize_component(Part, ComponentDefinition) ->
     CaseNormalizedPart =
         case maps:get(case_sensitive, ComponentDefinition) of

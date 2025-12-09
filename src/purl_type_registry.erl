@@ -12,12 +12,7 @@
     ets_ref :: ets:table(),
     dets_ref :: dets:tab_name()
 }).
--record(row, {
-    type :: purl:type(),
-    filename = undefined :: file:filename() | undefined,
-    sync_time :: pos_integer(),
-    specification :: purl:type_specification()
-}).
+-record(row, {type, filename = undefined, sync_time, specification}).
 
 -export_type([start_opt/0, start_opts/0]).
 
@@ -25,7 +20,12 @@
 -type start_opts() :: [start_opt()].
 
 -type state() :: #state{}.
--type row() :: #row{}.
+-type row() :: #row{
+    type :: purl:type(),
+    filename :: file:filename() | undefined,
+    sync_time :: pos_integer(),
+    specification :: purl:type_specification()
+}.
 
 %% API
 -export([
@@ -37,6 +37,8 @@
     delete/2,
     lookup/1,
     lookup/2,
+    list_types/0,
+    list_types/1,
     child_spec/1
 ]).
 
@@ -86,6 +88,14 @@ lookup(Name, Type) ->
         [#row{type = Type, specification = Specification}] -> Specification;
         [] -> default_type_specification(Type)
     end.
+
+-spec list_types() -> [purl:type()].
+list_types() ->
+    list_types(?DEFAULT_NAME).
+
+-spec list_types(Name :: module()) -> [purl:type()].
+list_types(Name) ->
+    ets:select(Name, [{#row{type = '$1', _ = '_'}, [], ['$1']}]).
 
 -spec child_spec(Opts :: start_opts()) -> supervisor:child_spec().
 child_spec(Opts) ->
