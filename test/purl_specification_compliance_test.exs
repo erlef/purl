@@ -13,9 +13,6 @@ excluded_tests = [
   # Requires Version, but that is not valid according to specification
   {"swift-test", "parse", "invalid swift purl without version"},
   {"swift-test", "build", "invalid swift purl without version"},
-  # https://github.com/package-url/purl-spec/pull/735
-  {"cran-test", "parse", "invalid cran purl without version"},
-  {"cran-test", "build", "invalid cran purl without version"},
 
   # Namespace validation now enforces required namespaces
   {"huggingface-test", "roundtrip", "minimal Hugging Face model. Roundtrip an input purl to canonical."},
@@ -34,13 +31,8 @@ excluded_tests = [
   {"conan-test", "parse", "invalid conan purl only namespace"},
 
   # Various Bazel
-  # https://github.com/package-url/purl-spec/pull/730
-  # Missing Encoding of qualifier "/"
-  {"bazel-test", "roundtrip", "bazel module with custom registry"},
-  # Test has trailing slash in input but not in expected output - needs fixing in purl test suite
-  {"bazel-test", "parse", "bazel module with custom registry"},
-  # Encoding issues in purl test suite - URL encoding differences
-  {"bazel-test", "build", "bazel module with custom registry"}
+  {"bazel-test", "roundtrip", "bazel module with default registry"},
+  {"bazel-test", "parse", "bazel module with default registry"}
 ]
 
 parameters =
