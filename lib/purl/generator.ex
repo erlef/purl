@@ -10,7 +10,18 @@ with {:module, StreamData} <- Code.ensure_loaded(StreamData) do
     alias Purl.Generator.Version, as: VersionGenerator
 
     @spec type :: StreamData.t(Purl.type())
-    def type, do: require_letter_start(string([?a..?z, ?A..?Z, ?0..?9, ?., ?+, ?-], min_length: 1, max_length: 20))
+    def type do
+      [?a..?z, ?A..?Z, ?0..?9, ?., ?+, ?-]
+      |> string(min_length: 1, max_length: 20)
+      |> require_letter_start()
+      # Discard Known Types since those have restrictions on segments of the purl
+      |> filter(fn type ->
+        case :purl_type_registry.lookup(type) do
+          %{"$id": "unregistered://" <> _rest} -> true
+          _known_type -> false
+        end
+      end)
+    end
 
     @spec namespace_segment :: StreamData.t(Purl.namespace_segment())
     def namespace_segment, do: filter(string(:printable, min_length: 1, max_length: 50), &(not String.contains?(&1, "/")))
