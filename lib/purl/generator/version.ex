@@ -5,6 +5,8 @@ with {:module, StreamData} <- Code.ensure_loaded(StreamData) do
 
     import StreamData
 
+    @type generator_opts :: [lowercase: boolean()]
+
     @spec major :: StreamData.t(Version.major())
     defp major, do: non_negative_integer()
 
@@ -14,19 +16,41 @@ with {:module, StreamData} <- Code.ensure_loaded(StreamData) do
     @spec patch :: StreamData.t(Version.patch())
     defp patch, do: non_negative_integer()
 
-    @spec pre :: StreamData.t(Version.pre())
-    defp pre, do: list_of(one_of([non_negative_integer(), string(:printable, max_length: 20)]), max_length: 5)
+    @spec pre(generator_opts()) :: StreamData.t(Version.pre())
+    defp pre(opts) do
+      string_gen = string(:printable, max_length: 20)
 
-    @spec build :: StreamData.t(Version.build())
-    defp build, do: one_of([constant(nil), string(:printable, max_length: 20)])
+      string_gen =
+        if Keyword.get(opts, :lowercase, false) do
+          map(string_gen, &String.downcase/1)
+        else
+          string_gen
+        end
 
-    @spec version :: StreamData.t(Version.t())
-    def version do
+      list_of(one_of([non_negative_integer(), string_gen]), max_length: 5)
+    end
+
+    @spec build(generator_opts()) :: StreamData.t(Version.build())
+    defp build(opts) do
+      string_gen = string(:printable, max_length: 20)
+
+      string_gen =
+        if Keyword.get(opts, :lowercase, false) do
+          map(string_gen, &String.downcase/1)
+        else
+          string_gen
+        end
+
+      one_of([constant(nil), string_gen])
+    end
+
+    @spec version(generator_opts()) :: StreamData.t(Version.t())
+    def version(opts \\ []) do
       bind(major(), fn major ->
         bind(minor(), fn minor ->
           bind(patch(), fn patch ->
-            bind(pre(), fn pre ->
-              bind(build(), fn build ->
+            bind(pre(opts), fn pre ->
+              bind(build(opts), fn build ->
                 constant(%Version{
                   build: build,
                   major: major,

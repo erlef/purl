@@ -237,6 +237,7 @@ defmodule PurlTest do
               case purl.version do
                 %Version{} = version -> Version.to_string(version)
                 string when is_binary(string) -> string
+                nil -> nil
               end
         }
 
