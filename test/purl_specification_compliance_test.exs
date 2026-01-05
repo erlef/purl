@@ -23,13 +23,6 @@ excluded_tests = [
   {"huggingface-test", "roundtrip", "minimal Hugging Face model. Roundtrip a canonical input to canonical output."},
   {"huggingface-test", "roundtrip", "Roundtrip test for PURL type: huggingface"},
 
-  # Conan seems to require optional fields...
-  # https://github.com/package-url/purl-spec/pull/734
-  {"conan-test", "parse", "invalid conan purl only channel qualifier"},
-  {"conan-test", "build", "invalid conan purl only channel qualifier"},
-  {"conan-test", "build", "invalid conan purl only namespace"},
-  {"conan-test", "parse", "invalid conan purl only namespace"},
-
   # Various Bazel
   {"bazel-test", "roundtrip", "bazel module with default registry"},
   {"bazel-test", "parse", "bazel module with default registry"}
