@@ -25,7 +25,10 @@ excluded_tests = [
 
   # Various Bazel
   {"bazel-test", "roundtrip", "bazel module with default registry"},
-  {"bazel-test", "parse", "bazel module with default registry"}
+  {"bazel-test", "parse", "bazel module with default registry"},
+
+  # Yocto Qualifier Order
+  {"yocto-test", "parse", "basic yocto recipe test"}
 ]
 
 parameters =
