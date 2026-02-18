@@ -8,10 +8,7 @@ excluded_tests = [
   # Case Sensitive test contradicts the specification
   # https://github.com/package-url/purl-spec/pull/634
   {"cpan-test", "build", "CPAN distribution name like module name"},
-  {"cpan-test", "parse", "CPAN distribution name as module name"},
-
-  # Various Bazel
-  {"bazel-test", "roundtrip", "bazel module with default registry"}
+  {"cpan-test", "parse", "CPAN distribution name as module name"}
 ]
 
 parameters =
