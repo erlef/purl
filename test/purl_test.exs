@@ -220,7 +220,7 @@ defmodule PurlTest do
   describe inspect(&Prul.to_string/1) do
     test "should encode qualifiers correctly" do
       purl = %Purl{type: "hex", name: "purl", qualifiers: %{"key" => "value&other=value"}}
-      assert purl |> Purl.to_string() |> Purl.new!() == purl
+      assert purl |> Purl.to_string() |> Purl.new!() |> Purl.equal?(purl)
     end
   end
 
@@ -245,11 +245,15 @@ defmodule PurlTest do
         to_string = to_string(purl)
         inspected = inspect(purl, printable_limit: 1_000)
 
-        assert {:ok, comparison} == Purl.new(canonical)
-        assert {:ok, comparison} == Purl.new(to_string)
+        assert {:ok, parsed_canonical} = Purl.new(canonical)
+        assert Purl.equal?(comparison, parsed_canonical)
+
+        assert {:ok, parsed_to_string} = Purl.new(to_string)
+        assert Purl.equal?(comparison, parsed_to_string)
 
         if String.length(canonical) <= 1000 do
-          assert {comparison, []} == Code.eval_string(inspected)
+          {evaled, []} = Code.eval_string(inspected)
+          assert Purl.equal?(comparison, evaled)
         end
       end
     end

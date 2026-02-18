@@ -273,6 +273,8 @@ deep_merge(Left, Right) ->
     ).
 
 -spec default_type_specification(Type :: purl:type()) -> purl:type_specification().
+default_type_specification(Type) when is_list(Type) ->
+    default_type_specification(list_to_binary(Type));
 default_type_specification(Type) ->
     DefaultComponentDefinition = #{case_sensitive => true, normalization_rules => []},
     #{
