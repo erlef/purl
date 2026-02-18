@@ -313,6 +313,14 @@ defmodule Purl do
 
   defp purl_response(:error), do: :error
 
+  @doc false
+  @spec equal?(purl1 :: t(), purl2 :: t()) :: boolean()
+  def equal?(%Purl{} = purl1, %Purl{} = purl2) do
+    purl1
+    |> to_record()
+    |> :purl.equal(to_record(purl2))
+  end
+
   defimpl String.Chars do
     @impl String.Chars
     def to_string(%Purl{} = purl), do: Purl.to_string(purl)

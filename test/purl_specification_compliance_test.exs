@@ -10,28 +10,8 @@ excluded_tests = [
   {"cpan-test", "build", "CPAN distribution name like module name"},
   {"cpan-test", "parse", "CPAN distribution name as module name"},
 
-  # Requires Version, but that is not valid according to specification
-  {"swift-test", "parse", "invalid swift purl without version"},
-  {"swift-test", "build", "invalid swift purl without version"},
-
-  # Namespace validation now enforces required namespaces
-  {"huggingface-test", "roundtrip", "minimal Hugging Face model. Roundtrip an input purl to canonical."},
-  {"huggingface-test", "build", "Build test  for PURL type: huggingface"},
-  {"huggingface-test", "parse", "Parse test for PURL type: huggingface"},
-  {"huggingface-test", "parse", "minimal Hugging Face model"},
-  {"huggingface-test", "build", "minimal Hugging Face model"},
-  {"huggingface-test", "roundtrip", "minimal Hugging Face model. Roundtrip a canonical input to canonical output."},
-  {"huggingface-test", "roundtrip", "Roundtrip test for PURL type: huggingface"},
-
   # Various Bazel
-  {"bazel-test", "roundtrip", "bazel module with default registry"},
-  {"bazel-test", "parse", "bazel module with default registry"},
-
-  # Yocto Qualifier Order
-  {"yocto-test", "parse", "basic yocto recipe test"},
-
-  # VSCode Default Qualifiers are Skipped
-  {"vscode-extension-test", "parse", "Parse test for VS Code Extension PURL with platform=universal (default)"}
+  {"bazel-test", "roundtrip", "bazel module with default registry"}
 ]
 
 parameters =
@@ -79,7 +59,7 @@ defmodule PurlSpecificationComplianceTest do
   defp run_test(%{test_type: "parse", expected_failure: false, input: input, expected_output: expected_output}) do
     assert {:ok, purl} = Purl.new(input)
 
-    assert purl == test_components_to_purl(expected_output)
+    assert Purl.equal?(purl, test_components_to_purl(expected_output))
   end
 
   defp run_test(%{test_type: "build", expected_failure: true, input: %{type: nil}}) do

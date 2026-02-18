@@ -61,6 +61,7 @@ https://github.com/package-url/purl-spec
 ]).
 
 -export([
+    equal/2,
     from_resource_uri/1,
     from_resource_uri/2,
     lookup_type/1,
@@ -462,3 +463,46 @@ Lookup Type Specification
 -doc #{since => <<"0.4.0">>}.
 -spec lookup_type(Type :: type()) -> type_specification().
 lookup_type(Type) -> purl_type_registry:lookup(Type).
+
+-doc false.
+-spec equal(Purl1 :: t(), Purl2 :: t()) -> boolean().
+equal(Purl, Purl) ->
+    true;
+equal(#purl{type = Type1}, #purl{type = Type2}) when Type1 =/= Type2 ->
+    false;
+equal(#purl{namespace = Ns1}, #purl{namespace = Ns2}) when Ns1 =/= Ns2 ->
+    false;
+equal(#purl{name = Name1}, #purl{name = Name2}) when Name1 =/= Name2 ->
+    false;
+equal(#purl{version = Ver1}, #purl{version = Ver2}) when Ver1 =/= Ver2 ->
+    false;
+equal(#purl{subpath = Sub1}, #purl{subpath = Sub2}) when Sub1 =/= Sub2 ->
+    false;
+equal(#purl{type = Type, qualifiers = Q1}, #purl{qualifiers = Q2}) ->
+    Specification = lookup_type(Type),
+    qualifiers_equal(Q1, Q2, Specification).
+
+-spec qualifiers_equal(
+    Q1 :: qualifiers(), Q2 :: qualifiers(), Specification :: type_specification()
+) -> boolean().
+qualifiers_equal(Q1, Q2, Specification) ->
+    DefaultQualifiers = purl_type_normalizer:default_qualifiers(Specification),
+    AllKeys = lists:usort(maps:keys(Q1) ++ maps:keys(Q2) ++ maps:keys(DefaultQualifiers)),
+    lists:all(
+        fun(Key) ->
+            V1 = maps:get(Key, Q1, maps:get(Key, DefaultQualifiers, undefined)),
+            V2 = maps:get(Key, Q2, maps:get(Key, DefaultQualifiers, undefined)),
+            values_match(V1, V2)
+        end,
+        AllKeys
+    ).
+
+-spec values_match(Value1 :: binary() | undefined, Value2 :: binary() | undefined) -> boolean().
+values_match(Value, Value) ->
+    true;
+values_match(undefined, _) ->
+    false;
+values_match(_, undefined) ->
+    false;
+values_match(_, _) ->
+    false.

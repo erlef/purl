@@ -6,7 +6,7 @@
 
 -include("purl.hrl").
 
--export([normalize/2]).
+-export([normalize/2, default_qualifiers/1]).
 
 -spec normalize(Purl :: purl:t(), Specification :: purl:type_specification()) -> purl:t().
 normalize(Purl, Specification) ->
@@ -90,32 +90,22 @@ apply_normalization_rule(_Rule, Part) ->
 -spec normalize_qualifiers(Purl, Specification :: purl:type_specification()) -> Purl when
     Purl :: purl:t().
 normalize_qualifiers(#purl{qualifiers = Qualifiers} = Purl, Specification) ->
-    NormalizedQualifiers = maps:filter(
-        fun(Key, Value) ->
-            not is_default_qualifier_value(Key, Value, Specification)
-        end,
-        Qualifiers
-    ),
-    Purl#purl{qualifiers = NormalizedQualifiers}.
+    Purl#purl{qualifiers = maps:merge(default_qualifiers(Specification), Qualifiers)}.
 
--spec is_default_qualifier_value(
-    Key :: purl:qualifier_key(),
-    Value :: purl:qualifier_value(),
-    Specification :: purl:type_specification()
-) -> boolean().
-is_default_qualifier_value(
-    Key, Value, #{qualifiers_definition := QualifiersDefinition} = Specification
-) ->
-    case lists:search(fun(#{key := DefKey}) -> DefKey =:= Key end, QualifiersDefinition) of
-        {value, QualifierDef} ->
-            DefaultValue = get_default_value_for_qualifier(Key, QualifierDef, Specification),
-            case DefaultValue of
-                undefined -> false;
-                _ -> values_match_after_normalization(Value, DefaultValue)
-            end;
-        _ ->
-            false
-    end.
+-doc false.
+-spec default_qualifiers(Specification :: purl:type_specification()) -> purl:qualifiers().
+default_qualifiers(#{qualifiers_definition := QualifiersDefinition} = Specification) ->
+    lists:foldl(
+        fun(QualifierDef, Acc) ->
+            Key = maps:get(key, QualifierDef),
+            case get_default_value_for_qualifier(Key, QualifierDef, Specification) of
+                undefined -> Acc;
+                DefaultValue -> maps:put(Key, DefaultValue, Acc)
+            end
+        end,
+        #{},
+        QualifiersDefinition
+    ).
 
 -spec get_default_value_for_qualifier(
     Key :: purl:qualifier_key(),
@@ -130,17 +120,3 @@ get_default_value_for_qualifier(_Key, #{default_value := DefaultValue}, _Specifi
     DefaultValue;
 get_default_value_for_qualifier(_Key, _QualifierDef, _Specification) ->
     undefined.
-
--spec values_match_after_normalization(Value1 :: binary(), Value2 :: binary()) -> boolean().
-values_match_after_normalization(Value1, Value2) ->
-    normalize_url_for_comparison(Value1) =:= normalize_url_for_comparison(Value2).
-
--spec normalize_url_for_comparison(Value :: binary()) -> binary().
-normalize_url_for_comparison(Value) when byte_size(Value) =:= 0 ->
-    Value;
-normalize_url_for_comparison(Value) ->
-    %% Remove trailing slash for URL comparison only
-    case binary:last(Value) of
-        $/ -> binary:part(Value, 0, byte_size(Value) - 1);
-        _ -> Value
-    end.

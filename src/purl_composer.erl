@@ -9,11 +9,12 @@
 -export([compose_uri/1]).
 
 -spec compose_uri(Purl) -> uri_string:uri_map() when Purl :: purl:t().
-compose_uri(#purl{} = Purl) ->
+compose_uri(#purl{type = Type} = Purl) ->
+    Specification = purl_type_registry:lookup(Type),
     maps:filter(fun(_Key, Value) -> Value =/= undefined end, #{
         fragment => encode_subpath(Purl#purl.subpath),
         path => encode_uri_path(Purl),
-        query => encode_qualifiers(Purl#purl.qualifiers),
+        query => encode_qualifiers(Purl#purl.qualifiers, Specification),
         scheme => <<"pkg">>
     }).
 
@@ -36,19 +37,30 @@ encode_namespace(Namespace) -> lists:map(fun encode/1, Namespace).
 -spec encode_name(Name) -> unicode:chardata() when Name :: purl:name().
 encode_name(Name) -> encode(Name, "/").
 
--spec encode_qualifiers(Qualifiers) -> unicode:chardata() | undefined when
-    Qualifiers :: purl:qualifiers().
-encode_qualifiers(Qualifiers) when Qualifiers =:= #{} ->
-    undefined;
-encode_qualifiers(Qualifiers) ->
-    Encoded = lists:map(
-        fun({Key, Value}) ->
-            [Key, "=", encode(Value, "&+/,")]
+-spec encode_qualifiers(Qualifiers, Specification) -> unicode:chardata() | undefined when
+    Qualifiers :: purl:qualifiers(),
+    Specification :: purl:type_specification().
+encode_qualifiers(Qualifiers, Specification) ->
+    DefaultQualifiers = purl_type_normalizer:default_qualifiers(Specification),
+    FilteredQualifiers = maps:filter(
+        fun(Key, Value) ->
+            maps:get(Key, DefaultQualifiers, undefined) =/= Value
         end,
-        maps:to_list(Qualifiers)
+        Qualifiers
     ),
-    Joined = lists:join("&", Encoded),
-    iolist_to_binary(Joined).
+    case FilteredQualifiers =:= #{} of
+        true ->
+            undefined;
+        false ->
+            Encoded = lists:map(
+                fun({Key, Value}) ->
+                    [Key, "=", encode(Value, "&+/,")]
+                end,
+                maps:to_list(FilteredQualifiers)
+            ),
+            Joined = lists:join("&", Encoded),
+            iolist_to_binary(Joined)
+    end.
 
 -spec encode_version(Version) -> unicode:chardata() when Version :: unicode:chardata().
 encode_version(Version) -> encode(Version, "/").
