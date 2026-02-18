@@ -28,7 +28,10 @@ excluded_tests = [
   {"bazel-test", "parse", "bazel module with default registry"},
 
   # Yocto Qualifier Order
-  {"yocto-test", "parse", "basic yocto recipe test"}
+  {"yocto-test", "parse", "basic yocto recipe test"},
+
+  # VSCode Default Qualifiers are Skipped
+  {"vscode-extension-test", "parse", "Parse test for VS Code Extension PURL with platform=universal (default)"}
 ]
 
 parameters =
@@ -36,7 +39,16 @@ parameters =
       test_file_name = Path.basename(file, ".json"),
       # credo:disable-for-next-line Credo.Check.Warning.UnsafeToAtom
       test_suite = file |> File.read!() |> Jason.decode!(keys: :atoms),
-      %{"$schema": "https://packageurl.org/schemas/purl-test.schema-0.1.json", tests: tests} = test_suite,
+      %{"$schema": schema, tests: tests} = test_suite,
+      true =
+        match?(
+          schema
+          when schema in [
+                 "https://packageurl.org/schemas/purl-test.schema-0.1.json",
+                 "https://packageurl.org/schemas/purl-test.schema-1.0.json"
+               ],
+          schema
+        ),
       %{description: test_description, test_type: test_type} = test <- tests,
       {test_file_name, test_type, test_description} not in excluded_tests do
     %{
