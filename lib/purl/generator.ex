@@ -149,7 +149,7 @@ with {:module, StreamData} <- Code.ensure_loaded(StreamData) do
 
     @spec generate_conditional_list(StreamData.t(term()), String.t()) :: StreamData.t(list())
     defp generate_conditional_list(_generator, "prohibited"), do: constant([])
-    defp generate_conditional_list(generator, "required"), do: filter(generator, &(length(&1) > 0))
+    defp generate_conditional_list(generator, "required"), do: filter(generator, &(&1 != []))
     defp generate_conditional_list(generator, "optional"), do: one_of([constant([]), generator])
 
     @spec generate_spec_qualifiers(list()) :: StreamData.t(map())
