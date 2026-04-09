@@ -13,6 +13,8 @@
 validate(Purl, TypeSpecification) ->
     maybe
         ok ?= validate_namespace(Purl, TypeSpecification),
+        ok ?= validate_name(Purl, TypeSpecification),
+        ok ?= validate_version(Purl, TypeSpecification),
         ok ?= validate_qualifiers(Purl, TypeSpecification),
         ok
     end.
@@ -30,35 +32,67 @@ validate_namespace(#purl{namespace = [_ | _]}, #{
 validate_namespace(#purl{namespace = Namespace}, #{
     type := Type, namespace_definition := NamespaceDefinition
 }) ->
-    lists:foreach(
-        fun(Part) -> validate_component(Part, NamespaceDefinition, Type) end, Namespace
-    ),
+    validate_components(Namespace, NamespaceDefinition, Type, namespace).
+
+-spec validate_name(Purl :: purl:t(), TypeSpecification :: purl:type_specification()) ->
+    ok | purl:parse_error().
+validate_name(#purl{name = Name}, #{type := Type, name_definition := NameDefinition}) ->
+    validate_component(Name, NameDefinition, Type, name).
+
+-spec validate_version(Purl :: purl:t(), TypeSpecification :: purl:type_specification()) ->
+    ok | purl:parse_error().
+validate_version(#purl{version = undefined}, _TypeSpecification) ->
+    ok;
+validate_version(#purl{version = Version}, #{type := Type, version_definition := VersionDefinition}) ->
+    validate_component(Version, VersionDefinition, Type, version);
+validate_version(_Purl, _TypeSpecification) ->
     ok.
+
+-spec validate_components(
+    Parts :: [binary()],
+    ComponentDefinition :: purl:type_component_definition(),
+    Type :: purl:type(),
+    ComponentName :: atom()
+) -> ok | purl:parse_error().
+validate_components([], _ComponentDefinition, _Type, _ComponentName) ->
+    ok;
+validate_components([Part | Rest], ComponentDefinition, Type, ComponentName) ->
+    maybe
+        ok ?= validate_component(Part, ComponentDefinition, Type, ComponentName),
+        validate_components(Rest, ComponentDefinition, Type, ComponentName)
+    end.
 
 -spec validate_component(
     Part :: binary(),
     ComponentDefinition :: purl:type_component_definition(),
-    Type :: purl:type()
+    Type :: purl:type(),
+    ComponentName :: atom()
 ) -> ok | purl:parse_error().
-validate_component(Part, ComponentDefinition, Type) ->
+validate_component(Part, ComponentDefinition, Type, ComponentName) ->
     maybe
-        ok ?= validate_component_permitted_characters(Part, ComponentDefinition, Type),
+        ok ?=
+            validate_component_permitted_characters(Part, ComponentDefinition, Type, ComponentName),
         ok
     end.
 
 -spec validate_component_permitted_characters(
-    Part :: binary(), ComponentDefinition :: purl:type_component_definition(), Type :: purl:type()
+    Part :: binary(),
+    ComponentDefinition :: purl:type_component_definition(),
+    Type :: purl:type(),
+    ComponentName :: atom()
 ) -> ok | purl:parse_error().
-validate_component_permitted_characters(Part, #{permitted_characters := PermittedCharacters}, Type) ->
+validate_component_permitted_characters(
+    Part, #{permitted_characters := PermittedCharacters}, Type, ComponentName
+) ->
     case re:run(Part, PermittedCharacters) of
         {match, _} ->
             ok;
         nomatch ->
             {error,
-                {type_validation, Type, component, Part,
+                {type_validation, Type, ComponentName, Part,
                     <<"Component contains invalid characters.">>}}
     end;
-validate_component_permitted_characters(_Part, _ComponentDefinition, _Type) ->
+validate_component_permitted_characters(_Part, _ComponentDefinition, _Type, _ComponentName) ->
     ok.
 
 -spec validate_qualifiers(Purl :: purl:t(), TypeSpecification :: purl:type_specification()) ->

@@ -18,12 +18,24 @@ with {:module, StreamData} <- Code.ensure_loaded(StreamData) do
         |> string(min_length: 1, max_length: 20)
         |> require_letter_start()
 
+      # Exclude types with permitted_characters constraints since generating
+      # random strings that match arbitrary regexes is not feasible
       known_types =
         :purl_type_registry.list_types()
+        |> Enum.reject(&type_has_permitted_characters?/1)
         |> Enum.map(&constant/1)
         |> one_of()
 
       one_of([known_types, unknown_types])
+    end
+
+    @spec type_has_permitted_characters?(Purl.type()) :: boolean()
+    defp type_has_permitted_characters?(type) do
+      spec = :purl_type_registry.lookup(type)
+
+      Map.has_key?(spec.namespace_definition, :permitted_characters) or
+        Map.has_key?(spec.name_definition, :permitted_characters) or
+        Map.has_key?(spec.version_definition, :permitted_characters)
     end
 
     @spec namespace_segment(generator_opts()) :: StreamData.t(Purl.namespace_segment())
