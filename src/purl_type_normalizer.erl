@@ -58,9 +58,7 @@ normalize_component(Part, ComponentDefinition) ->
             false -> string:lowercase(Part)
         end,
     lists:foldl(
-        fun(Rule, Acc) ->
-            apply_normalization_rule(Rule, Acc)
-        end,
+        fun apply_normalization_rule/2,
         CaseNormalizedPart,
         maps:get(normalization_rules, ComponentDefinition)
     ).
