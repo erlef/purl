@@ -24,6 +24,3 @@ purl-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
-
-# Cached Data Files
-priv/data/*.dets

@@ -1,31 +1,18 @@
 -module(purl_type_registry).
 
--feature(maybe_expr, enable).
-
 -behaviour(gen_server).
 
 -moduledoc false.
 
--include_lib("kernel/include/file.hrl").
-
 -record(state, {
-    ets_ref :: ets:table(),
-    dets_ref :: dets:tab_name()
+    ets_ref :: ets:table()
 }).
--record(row, {type, filename = undefined, sync_time, specification}).
+-record(row, {type, specification}).
 
 -export_type([start_opt/0, start_opts/0]).
 
--type start_opt() :: {name, module()} | {type_dir, file:filename()}.
+-type start_opt() :: {name, module()}.
 -type start_opts() :: [start_opt()].
-
--type state() :: #state{}.
--type row() :: #row{
-    type :: purl:type(),
-    filename :: file:filename() | undefined,
-    sync_time :: pos_integer(),
-    specification :: purl:type_specification()
-}.
 
 %% API
 -export([
@@ -54,12 +41,7 @@ start_link() ->
 -spec start_link(Opts) -> gen_server:start_ret() when Opts :: start_opts().
 start_link(Opts) ->
     Name = proplists:get_value(name, Opts, ?DEFAULT_NAME),
-    InitOpts = #{
-        name => Name,
-        type_dir => proplists:get_value(
-            type_dir, Opts, filename:join([code:priv_dir(purl), "spec", "types"])
-        )
-    },
+    InitOpts = #{name => Name},
     gen_server:start_link({local, Name}, ?MODULE, InitOpts, []).
 
 -spec add(Specification :: purl:type_specification()) -> ok.
@@ -109,35 +91,27 @@ child_spec(Opts) ->
         modules => [?MODULE]
     }.
 
-init(#{name := Name, type_dir := TypeDir} = _Opts) ->
-    DetsFile = get_dets_filename(Name),
-
-    ok = ensure_dets_data_dir(),
-
+init(#{name := Name} = _Opts) ->
     Table = ets:new(Name, [named_table, protected, set, {read_concurrency, true}, {keypos, 2}]),
-    {ok, DetsRef} = dets:open_file(Name, [{type, set}, {file, DetsFile}, {keypos, 2}]),
 
-    dets:to_ets(Name, Table),
+    true = ets:insert(Table, [
+        #row{
+            type = maps:get(type, Specification),
+            specification = type_specification_set_defaults(Specification)
+        }
+     || Specification <- purl_type_data:specifications()
+    ]),
 
-    State = #state{ets_ref = Table, dets_ref = DetsRef},
-
-    maybe_reload_from_disk(TypeDir, State),
-
-    {ok, State}.
+    {ok, #state{ets_ref = Table}}.
 
 handle_call({add, Specification}, _From, State) ->
     DefaultedSpec = type_specification_set_defaults(Specification),
     Type = maps:get(type, DefaultedSpec),
-    Timestamp = erlang:system_time(second),
-    Row = #row{type = Type, specification = DefaultedSpec, sync_time = Timestamp},
+    Row = #row{type = Type, specification = DefaultedSpec},
     true = ets:insert(State#state.ets_ref, Row),
-    ok = dets:insert(State#state.dets_ref, Row),
-    ok = dets:sync(State#state.dets_ref),
     {reply, ok, State};
 handle_call({delete, Type}, _From, State) ->
     true = ets:delete(State#state.ets_ref, Type),
-    ok = dets:delete(State#state.dets_ref, Type),
-    ok = dets:sync(State#state.dets_ref),
     {reply, ok, State};
 handle_call(_Msg, _From, State) ->
     {reply, {error, not_implemented}, State}.
@@ -150,104 +124,10 @@ handle_info(_Msg, State) ->
 
 terminate(_Reason, State) ->
     true = ets:delete(State#state.ets_ref),
-    ok = dets:close(State#state.dets_ref),
     ok.
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
-
--spec get_dets_data_dir() -> file:filename().
-get_dets_data_dir() ->
-    filename:join([code:priv_dir(purl), "data"]).
-
--spec get_dets_filename(Name :: module()) -> file:filename().
-get_dets_filename(Name) ->
-    filename:join([get_dets_data_dir(), atom_to_list(Name) ++ ".dets"]).
-
--spec ensure_dets_data_dir() -> ok | {error, term()}.
-ensure_dets_data_dir() ->
-    DataDir = get_dets_data_dir(),
-    case filelib:is_dir(DataDir) of
-        true ->
-            ok;
-        false ->
-            case file:make_dir(DataDir) of
-                ok -> ok;
-                {error, _Reason} -> {error, unable_to_create_data_dir}
-            end
-    end.
-
--spec maybe_reload_from_disk(TypeDir :: file:filename(), State :: state()) -> ok.
-maybe_reload_from_disk(TypeDir, State) ->
-    PathWildcard = filename:join([TypeDir, "*.json"]),
-    Files = filelib:wildcard(PathWildcard),
-
-    CachedFiles = ets:foldl(
-        fun(#row{filename = Filename, sync_time = SyncTime}, Acc) ->
-            maps:put(Filename, SyncTime, Acc)
-        end,
-        #{},
-        State#state.ets_ref
-    ),
-
-    ChangedFiles = lists:filter(
-        fun(File) ->
-            case maps:get(File, CachedFiles, undefined) of
-                undefined ->
-                    true;
-                CacheTime ->
-                    {ok, #file_info{mtime = MTime}} = file:read_file_info(File, [{time, posix}]),
-                    CacheTime < MTime
-            end
-        end,
-        Files
-    ),
-
-    ok = reload_specification_from_disk(ChangedFiles, State).
-
--spec reload_specification_from_disk(Files :: [file:filename()], State :: state()) ->
-    ok | {error, term()}.
-reload_specification_from_disk([], State) ->
-    ok = dets:sync(State#state.dets_ref),
-    ok;
-reload_specification_from_disk([File | Rest], State) ->
-    case load_specification_row(File) of
-        {ok, Row} ->
-            ets:insert(State#state.ets_ref, Row),
-            dets:insert(State#state.dets_ref, Row),
-            reload_specification_from_disk(Rest, State);
-        {error, Reason} ->
-            {error, Reason}
-    end.
-
--spec load_specification_row(File :: file:filename()) -> {ok, row()} | {error, term()}.
-load_specification_row(File) ->
-    maybe
-        {ok, Data} ?= file:read_file(File),
-        {Parsed, Result, <<>>} = json:decode(Data, ok, #{
-            object_push => fun(Key, Value, Acc) -> [{binary_to_atom(Key), Value} | Acc] end
-        }),
-        case {Result, Parsed} of
-            {ok, #{'$schema' := Schema} = Specification} when
-                Schema =:=
-                    <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>;
-                Schema =:= <<"https://packageurl.org/schemas/purl-type.schema-1.0.json">>
-            ->
-                Type = maps:get(type, Specification),
-                SyncTime = erlang:system_time(second),
-                Row = #row{
-                    type = Type,
-                    specification = type_specification_set_defaults(Specification),
-                    sync_time = SyncTime,
-                    filename = File
-                },
-                {ok, Row};
-            {ok, Parsed} ->
-                {error, {invalid_specification, File, Parsed}};
-            {{error, Reason}, _Data} ->
-                {error, {json_parse, File, Reason}}
-        end
-    end.
 
 -spec type_specification_set_defaults(Specification :: purl:type_specification()) ->
     purl:type_specification().

@@ -1,0 +1,10 @@
+{application, rebar3_purl_gen, [
+    {description, "Generates purl_type_data from the purl-spec submodule"},
+    {vsn, "0.1.0"},
+    {registered, []},
+    {applications, [kernel, stdlib]},
+    {env, []},
+    {modules, []},
+    {licenses, ["Apache-2.0"]},
+    {links, []}
+]}.
