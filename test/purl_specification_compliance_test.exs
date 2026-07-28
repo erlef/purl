@@ -8,7 +8,21 @@ excluded_tests = [
   # Case Sensitive test contradicts the specification
   # https://github.com/package-url/purl-spec/pull/634
   {"cpan-test", "build", "CPAN distribution name like module name"},
-  {"cpan-test", "parse", "CPAN distribution name as module name"}
+  {"cpan-test", "parse", "CPAN distribution name as module name"},
+
+  # The rule that a distribution name must not contain "::" only exists as prose
+  # in the name_definition note, not as a machine readable field such as
+  # permitted_characters, so it cannot be enforced from the type definition.
+  {"cpan-test", "parse", "CPAN with just the module name and version"},
+
+  # The git type expects an unencoded "/" inside the name (e.g. "forgejo/forgejo"),
+  # but "/" is the namespace separator in the purl grammar, so it must be encoded
+  # as %2F. One fixture is also plainly corrupt: it expects "forgejoforgejo/",
+  # with the slash misplaced.
+  {"git-test", "roundtrip", "git namespace and name should be lowercased. Roundtrip an input purl to canonical."},
+  {"git-test", "parse", "Parse test for PURL type: git"},
+  {"git-test", "build", "Build test  for PURL type: git"},
+  {"git-test", "roundtrip", "Roundtrip test for PURL type: git"}
 ]
 
 parameters =
