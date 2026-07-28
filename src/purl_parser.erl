@@ -83,13 +83,21 @@ parse_path(Path) ->
 
             Namespace = lists:map(fun uri_string:percent_decode/1, RawNamespace),
 
-            NameWithVersionParts = binary:split(NameWithVersion, <<"@">>),
-
+            %% The version is separated by the last unencoded "@", so that names
+            %% which themselves contain an "@" (such as the brew formula
+            %% "node@20") are preserved.
             {Name, Version} =
-                case NameWithVersionParts of
-                    [RawName] ->
-                        {uri_string:percent_decode(RawName), undefined};
-                    [RawName, RawVersion] ->
+                case binary:matches(NameWithVersion, <<"@">>) of
+                    [] ->
+                        {uri_string:percent_decode(NameWithVersion), undefined};
+                    Matches ->
+                        {Start, Length} = lists:last(Matches),
+                        RawName = binary:part(NameWithVersion, 0, Start),
+                        RawVersion = binary:part(
+                            NameWithVersion,
+                            Start + Length,
+                            byte_size(NameWithVersion) - Start - Length
+                        ),
                         {uri_string:percent_decode(RawName), uri_string:percent_decode(RawVersion)}
                 end,
 
