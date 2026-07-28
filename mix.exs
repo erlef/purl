@@ -47,8 +47,7 @@ defmodule Purl.MixProject do
         "README*",
         "rebar.config",
         "src",
-        "priv/spec/*LICENSE",
-        "priv/spec/types"
+        "priv/spec/*LICENSE"
       ]
     }
   end

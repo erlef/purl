@@ -8,8 +8,6 @@ doctest_test() ->
 -endif.
 
 serve_known_value_test() ->
-    file:delete(filename:join([code:priv_dir(purl), "data", "serve_known_value_test.dets"])),
-
     {ok, _} = purl_type_registry:start_link([{name, serve_known_value_test}]),
     ?assertMatch(
         #{
@@ -29,8 +27,6 @@ serve_known_value_test() ->
     ok.
 
 add_lookup_delete_test() ->
-    file:delete(filename:join([code:priv_dir(purl), "data", "add_lookup_delete_test.dets"])),
-
     {ok, _} = purl_type_registry:start_link([{name, add_lookup_delete_test}]),
     Type = <<"hex">>,
     DefaultComponentDefinition = #{case_sensitive => true, normalization_rules => []},
@@ -103,11 +99,9 @@ add_lookup_delete_test() ->
     ok.
 
 list_types_test() ->
-    file:delete(filename:join([code:priv_dir(purl), "data", "list_types_test.dets"])),
-
     {ok, _} = purl_type_registry:start_link([{name, list_types_test}]),
 
-    % Initially should have pre-loaded types from JSON files
+    % Initially should have the built-in types
     InitialTypes = purl_type_registry:list_types(list_types_test),
     ?assert(is_list(InitialTypes)),
     ?assert(lists:member(<<"hex">>, InitialTypes)),
