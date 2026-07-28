@@ -5,7 +5,7 @@
 %% Do not edit it by hand. Run `rebar3 purl_gen` after updating the
 %% `priv/spec` submodule and commit the result.
 %%
-%% purl-spec revision: 995f3878f5bb6979bc6560cd747e422e8262f18b
+%% purl-spec revision: dd9ffe94e86e0082586d15a552f022c59febe34f
 -module(purl_type_data).
 
 -moduledoc false.
@@ -137,7 +137,7 @@ specifications() ->
                 [
                     <<"pkg:bazel/rules_java@7.8.0">>,
                     <<"pkg:bazel/curl@8.8.0.bcr.1">>,
-                    <<"pkg:bazel/curl@8.8.0?repository_url=https://example.org/bazel-registry">>,
+                    <<"pkg:bazel/curl@8.8.0?repository_url=https:%2F%2Fexample.org%2Fbazel-registry">>,
                     <<"pkg:bazel/rules_java@8.5.0#java/runfiles">>,
                     <<"pkg:bazel/rules_java@8.5.0#java/runfiles:runfiles">>,
                     <<"pkg:bazel/rules_go@0.48.0#go">>
@@ -277,6 +277,66 @@ specifications() ->
                 }
         },
         #{
+            '$id' => <<"https://packageurl.org/types/brew-definition.json">>,
+            '$schema' =>
+                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+            description => <<"Homebrew packages for macOS and Linux">>,
+            examples =>
+                [
+                    <<"pkg:brew/sqlite@3.43.2">>,
+                    <<"pkg:brew/go">>,
+                    <<"pkg:brew/postgresql%4012@12.17">>,
+                    <<"pkg:brew/homebrew/core/sqlite@3.43.2">>,
+                    <<"pkg:brew/some-org/some-tap/some-app@1.2.3?repository_url=https:%2F%2Fgithub.com%2Fsome-org%2Fhomebrew-some-tap.git">>
+                ],
+            name_definition =>
+                #{
+                    case_sensitive => false,
+                    native_name => <<"formula">>,
+                    note =>
+                        <<"The name is the Homebrew formula or cask name. It is not case sensitive and must be lowercased. Formula names containing '@' (used for versioned formulas like 'postgresql@12') must have the '@' character percent-encoded as '%40' in the PURL string.">>,
+                    requirement => <<"required">>
+                },
+            namespace_definition =>
+                #{
+                    case_sensitive => false,
+                    native_name => <<"tap">>,
+                    note =>
+                        <<"The namespace is the Homebrew tap name, typically in the format 'owner/repo' (e.g., 'homebrew/core', 'some-org/some-tap'). It is not case sensitive and must be lowercased. When not specified, formulas are assumed to come from the default 'homebrew/core' tap.">>,
+                    requirement => <<"optional">>
+                },
+            qualifiers_definition =>
+                [
+                    #{
+                        description =>
+                            <<"The git URL of the tap repository when using a non-default tap. For example, 'https://github.com/some-org/homebrew-some-tap.git'.">>,
+                        key => <<"repository_url">>
+                    }
+                ],
+            reference_urls =>
+                [
+                    <<"https://brew.sh/">>,
+                    <<"https://formulae.brew.sh/">>,
+                    <<"https://docs.brew.sh/Taps">>
+                ],
+            repository =>
+                #{
+                    default_repository_url => <<"https://formulae.brew.sh/">>,
+                    note =>
+                        <<"The default repository is the Homebrew Formulae at https://formulae.brew.sh/. Homebrew also supports third-party taps (repositories) which can be specified using the namespace or repository_url qualifier.">>,
+                    use_repository => true
+                },
+            type => <<"brew">>,
+            type_name => <<"Homebrew">>,
+            version_definition =>
+                #{
+                    native_name => <<"version">>,
+                    note =>
+                        <<"The version is the Homebrew package version. Versions are optional to support use cases where the latest or any available version is acceptable.">>,
+                    requirement => <<"optional">>
+                }
+        },
+        #{
             '$id' => <<"https://packageurl.org/types/cargo-definition.json">>,
             '$schema' =>
                 <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
@@ -329,16 +389,15 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"extension_id">>,
                     note =>
-                        <<"The name is a 32 characters a-z and is case insensitive. This is not the same as the display name which is human readable and may vary with locale.">>,
-                    permitted_characters => <<"^[a-z]{32}$">>,
+                        <<"The name is 32 characters in the range a-p (base16-encoded with letters instead of hex digits) and is case insensitive. This is not the same as the display name which is human readable and may vary with locale.">>,
+                    permitted_characters => <<"^[a-p]{32}$">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
                 #{note => <<"There is no namespace">>, requirement => <<"prohibited">>},
             repository =>
                 #{
-                    default_repository_url =>
-                        <<"https://https://chromewebstore.google.com/">>,
+                    default_repository_url => <<"https://chromewebstore.google.com/">>,
                     note =>
                         <<"There is no documented API, only a sitemap and 'updatecheck' endpoints.">>,
                     use_repository => true
@@ -437,8 +496,8 @@ specifications() ->
             examples =>
                 [
                     <<"pkg:conan/openssl@3.0.3">>,
-                    <<"pkg:conan/openssl.org/openssl@3.0.3?user=bincrafters&channel=stable">>,
-                    <<"pkg:conan/openssl.org/openssl@3.0.3?arch=x86_64&build_type=Debug&compiler=Visual%20Studio&compiler.runtime=MDd&compiler.version=16&os=Windows&shared=True&rrev=93a82349c31917d2d674d22065c7a9ef9f380c8e&prev=b429db8a0e324114c25ec387bfd8281f330d7c5c">>
+                    <<"pkg:conan/openssl.org/openssl@3.0.3?channel=stable&user=bincrafters">>,
+                    <<"pkg:conan/openssl.org/openssl@3.0.3?arch=x86_64&build_type=Debug&compiler=Visual%20Studio&compiler.runtime=MDd&compiler.version=16&os=Windows&prev=b429db8a0e324114c25ec387bfd8281f330d7c5c&rrev=93a82349c31917d2d674d22065c7a9ef9f380c8e&shared=True">>
                 ],
             name_definition =>
                 #{
@@ -547,9 +606,13 @@ specifications() ->
             description => <<"Perl package distributions published on CPAN">>,
             examples =>
                 [
-                    <<"pkg:cpan/GDT/URI-PackageURL">>,
-                    <<"pkg:cpan/OALDERS/libwww-perl@6.76">>,
-                    <<"pkg:cpan/DROLSKY/DateTime@1.55?repository_url=backpan.perl.org">>
+                    <<"pkg:cpan/perl@5.42">>,
+                    <<"pkg:cpan/DBI@1.646">>,
+                    <<"pkg:cpan/SBOM-CycloneDX">>,
+                    <<"pkg:cpan/URI-PackageURL?author=GDT">>,
+                    <<"pkg:cpan/libwww-perl@6.76?author=OALDERS">>,
+                    <<"pkg:cpan/DateTime@1.55?author=DROLSKY&repository_url=backpan.perl.org">>,
+                    <<"pkg:cpan/Term-Gnuplot@0.90380906?distpath=authors%2Fid%2FI%2FIL%2FILYAZ%2Fmodules%2FTerm-Gnuplot-0.90380906.zip">>
                 ],
             name_definition =>
                 #{
@@ -561,14 +624,26 @@ specifications() ->
                 },
             namespace_definition =>
                 #{
-                    native_name => <<"CPAN ID of the author/publisher">>,
-                    note => <<"It MUST be written uppercase and is required">>,
-                    requirement => <<"required">>
+                    native_name => <<"CPAN author/publisher ID (CPANID)">>,
+                    note =>
+                        <<"When present, it represents the CPAN author/publisher ID (CPANID) and MUST be uppercase. It is appropriate to use 'namespace' for compatibility with existing CPAN purl producers/consumers or when a workflow explicitly requires author-scoped identifiers. For new identifiers, the 'author' qualifier is the preferred way to specify the author/publisher. When 'version' is omitted, author scoping via 'namespace' MAY be ambiguous because a distribution can change maintainers over time.">>,
+                    requirement => <<"optional">>
                 },
             note =>
-                <<"The previous CPAN PURL type specification allowed module names (e.g. URI::PackageURL) to be used as PURL 'name' while also omitting the PURL 'namespace'. The parser MUST emit an error when a module is specified as a PURL 'name' or detect '::' characters.">>,
+                <<"The PURL 'name' MUST be the CPAN distribution name (case sensitive) and MUST NOT contain the '::' separator (module name). The CPAN author/publisher ID (CPANID) is OPTIONAL: when needed, it SHOULD be provided using the 'author' qualifier. The PURL 'namespace' is OPTIONAL and, when present, represents the CPANID and MUST be uppercase; it MAY be used for compatibility with existing identifiers or tooling. When PURL 'version' is omitted, author scoping (via 'author' qualifier or 'namespace') MAY be ambiguous because a distribution can change maintainers over time.">>,
             qualifiers_definition =>
                 [
+                    #{
+                        description => <<"CPAN author/publisher ID (CPANID)">>,
+                        key => <<"author">>,
+                        requirement => <<"optional">>
+                    },
+                    #{
+                        description =>
+                            <<"Repository-relative path (not a URL) to the distribution archive or directory, typically under 'authors/id/...'">>,
+                        key => <<"distpath">>,
+                        requirement => <<"optional">>
+                    },
                     #{
                         description =>
                             <<"CPAN/MetaCPAN/BackPAN/DarkPAN repository base URL">>,
@@ -587,7 +662,7 @@ specifications() ->
                     },
                     #{
                         default_value => <<"tar.gz">>,
-                        description => <<"file extension">>,
+                        description => <<"distribution file extension">>,
                         key => <<"ext">>,
                         requirement => <<"optional">>
                     }
@@ -771,8 +846,8 @@ specifications() ->
             examples =>
                 [
                     <<"pkg:generic/openssl@1.1.10g">>,
-                    <<"pkg:generic/openssl@1.1.10g?download_url=https://openssl.org/source/openssl-1.1.0g.tar.gz&checksum=sha256:de4d501267da">>,
-                    <<"pkg:generic/bitwarderl?vcs_url=git%2Bhttps://git.fsfe.org/dxtr/bitwarderl%40cc55108da32">>
+                    <<"pkg:generic/openssl@1.1.10g?download_url=https:%2F%2Fopenssl.org%2Fsource%2Fopenssl-1.1.0g.tar.gz&checksum=sha256:de4d501267da">>,
+                    <<"pkg:generic/bitwarderl?vcs_url=git%2Bhttps:%2F%2Fgit.fsfe.org%2Fdxtr%2Fbitwarderl%40cc55108da32">>
                 ],
             name_definition =>
                 #{
@@ -804,6 +879,50 @@ specifications() ->
                 #{note => <<"There is no default repository.">>, use_repository => false},
             type => <<"generic">>,
             type_name => <<"Generic Package">>
+        },
+        #{
+            '$id' => <<"https://packageurl.org/types/git-definition.json">>,
+            '$schema' =>
+                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+            description => <<"Git-based source packages">>,
+            examples =>
+                [
+                    <<"pkg:git/codeberg.org/forgejo/forgejo@a72d2c07cfca03b55371089de6aa230d8c951fa0#options/locale_readme.md">>,
+                    <<"pkg:git/cygwin.com/cgit/newlib-cygwin@6d049c54c3314da31d9ffac133a6a2f2dfecaac2">>,
+                    <<"pkg:git/projects.blender.org/blender/blender.git">>,
+                    <<"pkg:git/gitlab.gnome.org/GNOME/adwaita-fonts">>
+                ],
+            name_definition =>
+                #{
+                    case_sensitive => true,
+                    native_name => <<"repository name with owner">>,
+                    note =>
+                        <<"The path on the host to the git repository. See: https://git-scm.com/docs/git-clone.html#_git_urls">>,
+                    requirement => <<"required">>
+                },
+            namespace_definition =>
+                #{
+                    case_sensitive => true,
+                    native_name => <<"The url path to the git host">>,
+                    note =>
+                        <<"The source host for the git repository. See: https://git-scm.com/docs/git-clone.html#_git_urls">>,
+                    requirement => <<"required">>
+                },
+            repository =>
+                #{
+                    note =>
+                        <<"There is no default package repository, this should be implied from namespace.">>,
+                    use_repository => true
+                },
+            type => <<"git">>,
+            type_name => <<"Git">>,
+            version_definition =>
+                #{
+                    native_name => <<"A git reference">>,
+                    note =>
+                        <<"The version is a git reference (https://git-scm.com/book/en/v2/Git-Internals-Git-References). Ideally a commit or tag.">>,
+                    requirement => <<"optional">>
+                }
         },
         #{
             '$id' => <<"https://packageurl.org/types/github-definition.json">>,
@@ -936,7 +1055,7 @@ specifications() ->
                     <<"pkg:hex/jason@1.1.2">>,
                     <<"pkg:hex/acme/foo@2.3.">>,
                     <<"pkg:hex/phoenix_html@2.13.3#priv/static/phoenix_html.js">>,
-                    <<"pkg:hex/bar@1.2.3?repository_url=https://myrepo.example.com">>
+                    <<"pkg:hex/bar@1.2.3?repository_url=https:%2F%2Fmyrepo.example.com">>
                 ],
             name_definition =>
                 #{
@@ -970,8 +1089,8 @@ specifications() ->
             description => <<"Hugging Face ML models">>,
             examples =>
                 [
-                    <<"pkg:huggingface/distilbert-base-uncased@043235d6088ecd3dd5fb5ca3592b6913fd516027">>,
-                    <<"pkg:huggingface/microsoft/deberta-v3-base@559062ad13d311b87b2c455e67dcd5f1c8f65111?repository_url=https://hub-ci.huggingface.co">>
+                    <<"pkg:huggingface/distilbert/distilbert-base-uncased@043235d6088ecd3dd5fb5ca3592b6913fd516027">>,
+                    <<"pkg:huggingface/microsoft/deberta-v3-base@559062ad13d311b87b2c455e67dcd5f1c8f65111?repository_url=https:%2F%2Fhub-ci.huggingface.co">>
                 ],
             name_definition =>
                 #{
@@ -1015,7 +1134,7 @@ specifications() ->
                     <<"pkg:julia/Dates@1.9.0?uuid=ade2ca70-3891-5945-98fb-dc099432e06a">>,
                     <<"pkg:julia/Dates?uuid=ade2ca70-3891-5945-98fb-dc099432e06a">>,
                     <<"pkg:julia/RegisterQD@0.3.1?uuid=ac24ea0c-1830-11e9-18d4-81f172323054">>,
-                    <<"pkg:julia/RegisterQD@0.3.1?uuid=ac24ea0c-1830-11e9-18d4-81f172323054&repository_url=https://github.com/HolyLab/HolyLabRegistry">>
+                    <<"pkg:julia/RegisterQD@0.3.1?uuid=ac24ea0c-1830-11e9-18d4-81f172323054&repository_url=https:%2F%2Fgithub.com%2FHolyLab%2FHolyLabRegistry">>
                 ],
             name_definition =>
                 #{
@@ -1060,7 +1179,7 @@ specifications() ->
                 [
                     <<"pkg:luarocks/luasocket@3.1.0-1">>,
                     <<"pkg:luarocks/hisham/luafilesystem@1.8.0-1">>,
-                    <<"pkg:luarocks/username/packagename@0.1.0-1?repository_url=https://example.com/private_rocks_server/">>
+                    <<"pkg:luarocks/username/packagename@0.1.0-1?repository_url=https:%2F%2Fexample.com%2Fprivate_rocks_server%2F">>
                 ],
             name_definition =>
                 #{
@@ -1112,7 +1231,7 @@ specifications() ->
                     <<"pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?type=zip&classifier=dist">>,
                     <<"pkg:maven/net.sf.jacob-projec/jacob@1.14.3?classifier=x86&type=dll">>,
                     <<"pkg:maven/net.sf.jacob-projec/jacob@1.14.3?classifier=x64&type=dll">>,
-                    <<"pkg:maven/groovy/groovy@1.0?repository_url=https://maven.google.com">>
+                    <<"pkg:maven/groovy/groovy@1.0?repository_url=https:%2F%2Fmaven.google.com">>
                 ],
             name_definition =>
                 #{
@@ -1169,8 +1288,8 @@ specifications() ->
             description => <<"MLflow ML models (Azure ML, Databricks, etc.)">>,
             examples =>
                 [
-                    <<"pkg:mlflow/creditfraud@3?repository_url=https://westus2.api.azureml.ms/mlflow/v1.0/subscriptions/a50f2011-fab8-4164-af23-c62881ef8c95/resourceGroups/TestResourceGroup/providers/Microsoft.MachineLearningServices/workspaces/TestWorkspace">>,
-                    <<"pkg:mlflow/trafficsigns@10?model_uuid=36233173b22f4c89b451f1228d700d49&run_id=410a3121-2709-4f88-98dd-dba0ef056b0a&repository_url=https://adb-5245952564735461.0.azuredatabricks.net/api/2.0/mlflow">>
+                    <<"pkg:mlflow/creditfraud@3?repository_url=https:%2F%2Fwestus2.api.azureml.ms%2Fmlflow%2Fv1.0%2Fsubscriptions%2Fa50f2011-fab8-4164-af23-c62881ef8c95%2FresourceGroups%2FTestResourceGroup%2Fproviders%2FMicrosoft.MachineLearningServices%2Fworkspaces%2FTestWorkspace">>,
+                    <<"pkg:mlflow/trafficsigns@10?model_uuid=36233173b22f4c89b451f1228d700d49&run_id=410a3121-2709-4f88-98dd-dba0ef056b0a&repository_url=https:%2F%2Fadb-5245952564735461.0.azuredatabricks.net%2Fapi%2F2.0%2Fmlflow">>
                 ],
             name_definition =>
                 #{
@@ -1218,7 +1337,7 @@ specifications() ->
                 [
                     <<"pkg:npm/foobar@12.3.1">>,
                     <<"pkg:npm/%40angular/animation@12.3.1">>,
-                    <<"pkg:npm/mypackage@12.4.5?vcs_url=git://host.com/path/to/repo.git%404345abcd34343">>
+                    <<"pkg:npm/mypackage@12.4.5?vcs_url=git:%2F%2Fhost.com%2F%2Fpath%2Fto%2Frepo.git%404345abcd34343">>
                 ],
             name_definition =>
                 #{
@@ -1263,7 +1382,7 @@ specifications() ->
                     case_sensitive => true,
                     native_name => <<"version">>,
                     note =>
-                        <<"Technically the name is case-perserving, but case-insensitive, and NuGet packages archives are case-perserving, while some NuGet API calls demand to lowercase the package name.">>,
+                        <<"Technically the name is case-preserving, but case-insensitive, and NuGet packages archives are case-preserving, while some NuGet API calls demand to lowercase the package name.">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -1293,9 +1412,9 @@ specifications() ->
                 <<"For artifacts stored in registries that conform to the OCI Distribution Specification https://github.com/opencontainers/distribution-spec including container images built by Docker and others">>,
             examples =>
                 [
-                    <<"pkg:oci/debian@sha256%3A244fd47e07d10?repository_url=docker.io/library/debian&arch=amd64&tag=latest">>,
-                    <<"pkg:oci/debian@sha256%3A244fd47e07d10?repository_url=ghcr.io/debian&tag=bullseye">>,
-                    <<"pkg:oci/static@sha256%3A244fd47e07d10?repository_url=gcr.io/distroless/static&tag=latest">>,
+                    <<"pkg:oci/debian@sha256%3A244fd47e07d10?repository_url=docker.io%2Flibrary%2Fdebian&arch=amd64&tag=latest">>,
+                    <<"pkg:oci/debian@sha256%3A244fd47e07d10?repository_url=ghcr.io%2Fdebian&tag=bullseye">>,
+                    <<"pkg:oci/static@sha256%3A244fd47e07d10?repository_url=gcr.io%2Fdistroless%2Fstatic&tag=latest">>,
                     <<"pkg:oci/hello-wasm@sha256:244fd47e07d10?tag=v1">>
                 ],
             name_definition =>
@@ -1566,7 +1685,7 @@ specifications() ->
             examples =>
                 [
                     <<"pkg:rpm/fedora/curl@7.50.3-1.fc25?arch=i386&distro=fedora-25">>,
-                    <<"pkg:rpm/centerim@4.22.10-1.el6?arch=i686&epoch=1&distro=fedora-25">>
+                    <<"pkg:rpm/fedora/centerim@4.22.10-1.el6?arch=i686&epoch=1&distro=fedora-25">>
                 ],
             name_definition =>
                 #{
@@ -1737,7 +1856,9 @@ specifications() ->
             examples =>
                 [
                     <<"pkg:vcpkg/bzip2@1.0.8?port_version=6">>,
+                    <<"pkg:vcpkg/zlib@1.3.1?triplet=x64-linux&vcs_url=git%2Bhttps:%2F%2Fgithub.com%2Fmicrosoft%2Fvcpkg%40b5d3197b1a8a3f4c2d9e0f1a2b3c4d5e6f708192">>,
                     <<"pkg:vcpkg/ffmpeg@5.1.2?repository_url=https:%2F%2Fgithub.com%2Fazure-sdk%2Fvcpkg">>,
+                    <<"pkg:vcpkg/zlib@1.3.1?repository_url=https:%2F%2Fgithub.com%2Fazure-sdk%2Fvcpkg&triplet=x64-linux&vcs_url=git%2Bhttps:%2F%2Fgithub.com%2Fazure-sdk%2Fvcpkg%40b5d3197b1a8a3f4c2d9e0f1a2b3c4d5e6f708192">>,
                     <<"pkg:vcpkg/llvm@15.0.7?repository_url=file:%2F%2F%2FC:%2Flocal-registry%2Fvcpkg">>,
                     <<"pkg:vcpkg/bzip2@1.0.8?port_version=6&repository_revision=84a143e4caf6b70db57f28d04c41df4a85c480fa&triplet=x64-linux">>
                 ],
@@ -1749,7 +1870,7 @@ specifications() ->
                 },
             namespace_definition => #{requirement => <<"prohibited">>},
             note =>
-                <<"A purl may carry extra qualifiers that describe the context in which the package is used, such as build configuration or platform. Parsers must tolerate these and may ignore any they do not expect. The `features` qualifier, a comma-separated list of enabled vcpkg feature names, records which optional features were enabled at build time; it is informational and not currently normative.">>,
+                <<"A purl may carry extra qualifiers that describe the context in which the package is used, such as build configuration or platform. Parsers must tolerate these and may ignore any they do not expect. The `vcs_url` common qualifier carries the port's version-control URL in pip VCS form, for example `git+https://github.com/microsoft/vcpkg@<git-tree>`. Its git-tree pins the exact port recipe. The `features` qualifier, a comma-separated list of enabled vcpkg feature names, records which optional features were enabled at build time; it is informational and not currently normative.">>,
             qualifiers_definition =>
                 [
                     #{
@@ -1761,7 +1882,7 @@ specifications() ->
                     },
                     #{
                         description =>
-                            <<"The full 40-character commit hash of the vcpkg registry. For git registries this corresponds to the registry `baseline` field in `vcpkg-configuration.json`. If omitted, the purl refers to the latest revision available.">>,
+                            <<"The full 40-character commit hash of the vcpkg registry baseline. For git registries this is the `baseline` field in `vcpkg-configuration.json`. A baseline fixes the state of the whole registry rather than a single port, and the same port version can be reached from many baselines, so the exact port recipe is pinned by the `vcs_url` git-tree instead. If omitted, the purl refers to the latest revision available.">>,
                         key => <<"repository_revision">>,
                         native_name => <<"repository_revision">>,
                         requirement => <<"optional">>
@@ -1798,7 +1919,7 @@ specifications() ->
             examples =>
                 [
                     <<"pkg:vscode-extension/ms-python/python@2023.25.10292213">>,
-                    <<"pkg:vscode-extension/muhammad-sammy/csharp@2.15.30?repository_url=https://open-vsx.org">>,
+                    <<"pkg:vscode-extension/muhammad-sammy/csharp@2.15.30?repository_url=https:%2F%2Fopen-vsx.org">>,
                     <<"pkg:vscode-extension/golang/go@0.39.1?platform=win32-x64">>
                 ],
             name_definition =>
