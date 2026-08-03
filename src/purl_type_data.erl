@@ -5,7 +5,7 @@
 %% Do not edit it by hand. Run `rebar3 purl_gen` after updating the
 %% `priv/spec` submodule and commit the result.
 %%
-%% purl-spec revision: dd9ffe94e86e0082586d15a552f022c59febe34f
+%% purl-spec revision: b5454e75c29b48e483290689fe635f2517925925
 -module(purl_type_data).
 
 -moduledoc false.
