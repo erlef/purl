@@ -2,6 +2,8 @@ defmodule PurlTest do
   use ExUnit.Case, async: true
   use ExUnitProperties
 
+  alias Purl.Error.InvalidField
+
   doctest Purl
 
   describe inspect(&Purl.new/1) do
@@ -15,6 +17,21 @@ defmodule PurlTest do
                 qualifiers: %{"key" => "value"},
                 subpath: ["path", "to", "directory"]
               }} = Purl.new("pkg:hex/name/space/purl@1.0.0?key=value#/path/to/directory/")
+    end
+
+    test "lowercases qualifier keys by default" do
+      assert {:ok, %Purl{qualifiers: %{"key" => "value"}}} = Purl.new("pkg:hex/purl?Key=value")
+      assert {:ok, %Purl{qualifiers: %{"key" => "value"}}} = Purl.new("pkg:hex/purl?Key=value", strict: false)
+    end
+
+    test "rejects qualifier keys that are not lowercase in strict mode" do
+      assert {:error, %InvalidField{field: :qualifiers, value: "Key"}} =
+               Purl.new("pkg:hex/purl?Key=value", strict: true)
+
+      assert {:error, %InvalidField{field: :qualifiers, value: "Key"}} =
+               Purl.new(%Purl{type: "hex", name: "purl", qualifiers: %{"Key" => "value"}}, strict: true)
+
+      assert {:ok, %Purl{qualifiers: %{"key" => "value"}}} = Purl.new("pkg:hex/purl?key=value", strict: true)
     end
 
     test "throws error on duplicate qualifiers" do
