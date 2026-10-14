@@ -6,23 +6,24 @@
 
 -moduledoc false.
 
--export([parse/1]).
+-export([parse/2]).
 
--spec parse(Purl) -> {ok, purl:t()} | {error, purl:parse_error()} when
-    Purl :: uri_string:uri_string() | uri_string:uri_map() | purl:t().
-parse(Purl) when is_binary(Purl) or is_list(Purl) ->
+-spec parse(Purl, Options) -> {ok, purl:t()} | {error, purl:parse_error()} when
+    Purl :: uri_string:uri_string() | uri_string:uri_map() | purl:t(),
+    Options :: purl:parse_options().
+parse(Purl, Options) when is_binary(Purl) or is_list(Purl) ->
     maybe
         #{} = UriMap ?= uri_string:parse(Purl),
-        parse(UriMap)
+        parse(UriMap, Options)
     end;
-parse(#{} = UriMap) when not (is_map_key(scheme, UriMap)) ->
+parse(#{} = UriMap, _Options) when not (is_map_key(scheme, UriMap)) ->
     {error, {invalid_scheme, undefined}};
-parse(#{scheme := Scheme} = UriMap) when Scheme =/= <<"pkg">> ->
+parse(#{scheme := Scheme} = UriMap, Options) when Scheme =/= <<"pkg">> ->
     case string:lowercase(Scheme) of
-        <<"pkg">> -> parse(maps:put(scheme, <<"pkg">>, UriMap));
+        <<"pkg">> -> parse(maps:put(scheme, <<"pkg">>, UriMap), Options);
         _ -> {error, {invalid_scheme, Scheme}}
     end;
-parse(#{scheme := <<"pkg">>, host := Type, path := Path} = UriMap) ->
+parse(#{scheme := <<"pkg">>, host := Type, path := Path} = UriMap, Options) ->
     parse(
         maps:remove(
             host,
@@ -31,12 +32,14 @@ parse(#{scheme := <<"pkg">>, host := Type, path := Path} = UriMap) ->
                 <<Type/binary, "/", Path/binary>>,
                 UriMap
             )
-        )
+        ),
+        Options
     );
-parse(#{scheme := <<"pkg">>, path := Path} = UriMap) ->
+parse(#{scheme := <<"pkg">>, path := Path} = UriMap, Options) ->
+    Strict = maps:get(strict, Options, false),
     maybe
         {ok, {Type, Namespace, Name, Version}} ?= parse_path(Path),
-        {ok, Qualifiers} ?= parse_query(maps:get(query, UriMap, undefined)),
+        {ok, Qualifiers} ?= parse_query(maps:get(query, UriMap, undefined), Strict),
         Subpath = parse_fragment(maps:get(fragment, UriMap, undefined)),
         Purl = #purl{
             type = Type,
@@ -46,15 +49,16 @@ parse(#{scheme := <<"pkg">>, path := Path} = UriMap) ->
             qualifiers = Qualifiers,
             subpath = Subpath
         },
-        parse(Purl)
+        parse(Purl, Options)
     end;
-parse(#purl{} = Purl) ->
+parse(#purl{} = Purl, Options) ->
+    Strict = maps:get(strict, Options, false),
     maybe
         {ok, Type} ?= parse_type(Purl#purl.type),
         {ok, Namespace} ?= parse_namespace(Purl#purl.namespace),
         {ok, Name} ?= parse_name(Purl#purl.name),
         {ok, Version} ?= parse_version(Purl#purl.version),
-        {ok, Qualifiers} ?= parse_qualifiers(Purl#purl.qualifiers),
+        {ok, Qualifiers} ?= parse_qualifiers(Purl#purl.qualifiers, Strict),
         {ok, Subpath} ?= parse_subpath(Purl#purl.subpath),
         {ok, #purl{
             type = Type,
@@ -104,18 +108,23 @@ parse_path(Path) ->
             {ok, {Type, Namespace, Name, Version}}
     end.
 
--spec parse_query(Query) ->
+-spec parse_query(Query, Strict) ->
     {ok, #{unicode:chardata() => unicode:chardata()}} | purl:parse_error()
 when
-    Query :: unicode:chardata() | undefined.
-parse_query(undefined) ->
+    Query :: unicode:chardata() | undefined,
+    Strict :: boolean().
+parse_query(undefined, _Strict) ->
     {ok, #{}};
-parse_query(Query) ->
+parse_query(Query, Strict) ->
     Parts = uri_string:dissect_query(Query),
     lists:foldl(
         fun
             ({RawKey, Value}, {ok, Acc}) ->
-                Key = string:lowercase(RawKey),
+                Key =
+                    case Strict of
+                        true -> RawKey;
+                        false -> string:lowercase(RawKey)
+                    end,
                 case Acc of
                     #{Key := _} -> {error, {duplicate_qualifier, Key}};
                     _ -> {ok, maps:put(Key, Value, Acc)}
@@ -212,17 +221,18 @@ parse_version(Version) ->
         true -> {ok, Version}
     end.
 
--spec parse_qualifiers(RawQualifiers) ->
+-spec parse_qualifiers(RawQualifiers, Strict) ->
     {ok, Qualifiers} | purl:parse_error()
 when
     RawQualifiers :: #{unicode:chardata() => unicode:chardata()},
+    Strict :: boolean(),
     Qualifiers :: purl:qualifiers().
-parse_qualifiers(RawQualifiers) ->
+parse_qualifiers(RawQualifiers, Strict) ->
     Result = maps:fold(
         fun
             (RawQualifierKey, RawQualifierValue, {ok, Acc}) ->
                 maybe
-                    {ok, QualifierKey} ?= parse_qualifier_key(RawQualifierKey),
+                    {ok, QualifierKey} ?= parse_qualifier_key(RawQualifierKey, Strict),
                     {ok, QualifierValue} ?= parse_qualifier_value(RawQualifierValue),
                     {ok, maps:put(QualifierKey, QualifierValue, Acc)}
                 else
@@ -240,14 +250,22 @@ parse_qualifiers(RawQualifiers) ->
         {error, Reason} -> {error, Reason}
     end.
 
--spec parse_qualifier_key(RawQualifierKey) ->
+-spec parse_qualifier_key(RawQualifierKey, Strict) ->
     {ok, QualifierKey} | {error, {invalid_field, qualifiers, QualifierKey}}
 when
+    Strict :: boolean(),
     RawQualifierKey :: unicode:chardata(),
     QualifierKey :: purl:qualifier_key().
-parse_qualifier_key(<<"">>) ->
+parse_qualifier_key(<<"">>, _Strict) ->
     {error, {invalid_field, qualifiers, <<"">>}};
-parse_qualifier_key(QualifierKey) ->
+parse_qualifier_key(QualifierKey, true) ->
+    case re:run(QualifierKey, "^[a-z\\.\\-\\_][a-z0-9\\.\\-\\_]*$") of
+        {match, _} ->
+            {ok, QualifierKey};
+        nomatch ->
+            {error, {invalid_field, qualifiers, QualifierKey}}
+    end;
+parse_qualifier_key(QualifierKey, false) ->
     case re:run(QualifierKey, "^[a-zA-Z\\.\\-\\_][a-zA-Z0-9\\.\\-\\_]*$") of
         {match, _} ->
             {ok, QualifierKey};

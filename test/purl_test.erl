@@ -14,6 +14,20 @@ doctest_test() ->
     }).
 -endif.
 
+strict_qualifier_key_test() ->
+    ?assertMatch(
+        {ok, #purl{qualifiers = #{<<"key">> := <<"value">>}}},
+        purl:new(<<"pkg:hex/purl?Key=value">>)
+    ),
+    ?assertEqual(
+        {error, {invalid_field, qualifiers, <<"Key">>}},
+        purl:new(<<"pkg:hex/purl?Key=value">>, #{strict => true})
+    ),
+    ?assertMatch(
+        {ok, #purl{qualifiers = #{<<"key">> := <<"value">>}}},
+        purl:new(<<"pkg:hex/purl?key=value">>, #{strict => true})
+    ).
+
 to_uri_test() ->
     URI = purl:to_uri(#purl{type = "hex", name = "purl"}),
     ?assertEqual(<<"pkg:hex/purl">>, uri_string:recompose(URI)).

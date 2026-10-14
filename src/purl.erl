@@ -44,6 +44,7 @@ https://github.com/package-url/purl-spec
 
 -export_type([
     parse_error/0,
+    parse_options/0,
     validation_field/0,
     type/0,
     namespace_segment/0,
@@ -66,6 +67,7 @@ https://github.com/package-url/purl-spec
     from_resource_uri/2,
     lookup_type/1,
     new/1,
+    new/2,
     register_type/1,
     start/2,
     stop/1,
@@ -85,6 +87,16 @@ stop(_State) ->
 -doc #{since => <<"0.4.0">>}.
 -type validation_field() ::
     namespace | name | version | subpath | qualifiers | {qualifiers, binary()}.
+
+-doc """
+Options for `new/2`
+
+* `strict` - Reject input that is not in canonical form where the
+  specification requires the canonical form. Defaults to `false`.
+  Currently this rejects qualifier keys that are not lowercase.
+""".
+-doc #{since => <<"0.6.0">>}.
+-type parse_options() :: #{strict => boolean()}.
 
 -doc #{since => <<"0.3.0">>}.
 -type parse_error() ::
@@ -161,7 +173,8 @@ qualifier key
 * The key must be composed only of ASCII letters and numbers, '.', '-' and '_' (period, dash and underscore)
 * A key cannot start with a number
 * A key must NOT be percent-encoded
-* A key is case insensitive. The canonical form is lowercase
+* A key must be lowercase. `new/1` lowercases keys, `new/2` with
+  `strict => true` rejects keys that are not lowercase
 * A key cannot contains spaces
 """.
 -doc #{since => <<"0.3.0">>}.
@@ -349,8 +362,30 @@ Creates a new purl struct from a `Purl`, `URI` or string.
 -spec new(Purl) -> {ok, t()} | parse_error() when
     Purl :: uri_string:uri_string() | uri_string:uri_map() | t().
 new(Purl) ->
+    new(Purl, #{}).
+
+-doc """
+Creates a new purl struct from a `Purl`, `URI` or string.
+
+See `t:parse_options/0` for the available options.
+
+## Examples
+
+```
+> purl:new(<<"pkg:hex/purl?Key=value">>, #{strict => false}).
+{ok, #purl{type = <<"hex">>, name = <<"purl">>, namespace = [], subpath = [], qualifiers = #{<<"key">> => <<"value">>}}}
+> purl:new(<<"pkg:hex/purl?Key=value">>, #{strict => true}).
+{error, {invalid_field, qualifiers, <<"Key">>}}
+```
+
+""".
+-doc #{since => <<"0.6.0">>}.
+-spec new(Purl, Options) -> {ok, t()} | parse_error() when
+    Purl :: uri_string:uri_string() | uri_string:uri_map() | t(),
+    Options :: parse_options().
+new(Purl, Options) ->
     maybe
-        {ok, #purl{type = Type} = Parsed} ?= purl_parser:parse(Purl),
+        {ok, #purl{type = Type} = Parsed} ?= purl_parser:parse(Purl, Options),
         TypeSpecification = lookup_type(Type),
         Normalized = purl_type_normalizer:normalize(Parsed, TypeSpecification),
         ok ?= purl_type_validator:validate(Normalized, TypeSpecification),
@@ -435,12 +470,12 @@ Lookup Type Specification
       #{requirement => <<"optional">>,case_sensitive => false,
         normalization_rules => [],
         note =>
-            <<"The namespace is optional; it may be used to specify the organization for private packages on hex.pm. It is not case sensitive and must be lowercased.">>,
+            <<"The namespace is optional; it may be used to specify the organization for private packages on hex.pm. It is not case sensitive and shall be lowercased.">>,
         native_name => <<"organization for private packages">>},
   name_definition =>
       #{requirement => <<"required">>,case_sensitive => false,
         normalization_rules => [],
-        note => <<"The name is not case sensitive and must be lowercased.">>,
+        note => <<"The name is not case sensitive and shall be lowercased.">>,
         native_name => <<"name">>},
   version_definition =>
       #{requirement => <<"optional">>,case_sensitive => true,

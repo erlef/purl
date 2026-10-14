@@ -5,7 +5,7 @@
 %% Do not edit it by hand. Run `rebar3 purl_gen` after updating the
 %% `priv/spec` submodule and commit the result.
 %%
-%% purl-spec revision: b5454e75c29b48e483290689fe635f2517925925
+%% purl-spec revision: 7cd2d3442fb9c88155db17ada7c911b40ec22d41
 -module(purl_type_data).
 
 -moduledoc false.
@@ -32,7 +32,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"name">>,
                     note =>
-                        <<"The name is the package name. It is not case sensitive and must be lowercased.">>,
+                        <<"The name is the package name. It is not case sensitive and shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -40,7 +40,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"vendor">>,
                     normalization_rules =>
-                        [<<"It is not case sensitive and must be lowercased.">>],
+                        [<<"It is not case sensitive and shall be lowercased.">>],
                     note =>
                         <<"The namespace is the vendor such as arch, arch32, archarm, manjaro or msys.">>,
                     requirement => <<"required">>
@@ -91,7 +91,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"name">>,
                     note =>
-                        <<"The name is the package name. It is not case sensitive and must be lowercased.">>,
+                        <<"The name is the package name. It is not case sensitive and shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -99,7 +99,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"vendor">>,
                     note =>
-                        <<"The namespace is the vendor such as alpine or openwrt. It is not case sensitive and must be lowercased.">>,
+                        <<"The namespace is the vendor such as alpine or openwrt. It is not case sensitive and shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             note =>
@@ -175,7 +175,7 @@ specifications() ->
                 #{
                     native_name => <<"label">>,
                     note =>
-                        <<"The optional subpath MAY refer to a label of a particular package or target in the module (https://bazel.build/concepts/labels). The label MUST NOT include a repo name and the leading '//' MUST be omitted. When referring to targets, the label MUST include the name of the target, separated from the package by ':'. If there is no target name, subpath is assumed to refer to the whole package.">>,
+                        <<"The optional subpath MAY refer to a label of a particular package or target in the module (https://bazel.build/concepts/labels). The label shall not include a repo name and the leading '//' shall be omitted. When referring to targets, the label shall include the name of the target, separated from the package by ':'. If there is no target name, subpath is assumed to refer to the whole package.">>,
                     requirement => <<"optional">>
                 },
             type => <<"bazel">>,
@@ -199,7 +199,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"repository name">>,
                     note =>
-                        <<"The name is the repository name. It is not case sensitive and must be lowercased.">>,
+                        <<"The name is the repository name. It is not case sensitive and shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -207,7 +207,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"user or organization">>,
                     note =>
-                        <<"The namespace is the user or organization. It is not case sensitive and must be lowercased.">>,
+                        <<"The namespace is the user or organization. It is not case sensitive and shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             repository =>
@@ -240,7 +240,7 @@ specifications() ->
                 #{
                     case_sensitive => false,
                     native_name => <<"name">>,
-                    note => <<"The name is the component name. It must be lowercased.">>,
+                    note => <<"The name is the component name. It shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -294,7 +294,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"formula">>,
                     note =>
-                        <<"The name is the Homebrew formula or cask name. It is not case sensitive and must be lowercased. Formula names containing '@' (used for versioned formulas like 'postgresql@12') must have the '@' character percent-encoded as '%40' in the PURL string.">>,
+                        <<"The name is the Homebrew formula or cask name. It is not case sensitive and shall be lowercased. Formula names containing '@' (used for versioned formulas like 'postgresql@12') shall have the '@' character percent-encoded as '%40' in the PURL string.">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -302,7 +302,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"tap">>,
                     note =>
-                        <<"The namespace is the Homebrew tap name, typically in the format 'owner/repo' (e.g., 'homebrew/core', 'some-org/some-tap'). It is not case sensitive and must be lowercased. When not specified, formulas are assumed to come from the default 'homebrew/core' tap.">>,
+                        <<"The namespace is the Homebrew tap name, typically in the format 'owner/repo' (e.g., 'homebrew/core', 'some-org/some-tap'). It is not case sensitive and shall be lowercased. When not specified, formulas are assumed to come from the default 'homebrew/core' tap.">>,
                     requirement => <<"optional">>
                 },
             qualifiers_definition =>
@@ -466,7 +466,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"name">>,
                     note =>
-                        <<"The name is not case sensitive and must be lowercased. Private, local packages may have no name. In this case you cannot create a purl for these.">>,
+                        <<"The name is not case sensitive and shall be lowercased. Private, local packages may have no name. In this case you cannot create a purl for these.">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -474,7 +474,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"vendor">>,
                     note =>
-                        <<"The namespace is the vendor. The namespace is not case sensitive and must be lowercased.">>,
+                        <<"The namespace is the vendor. The namespace is not case sensitive and shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             repository =>
@@ -619,18 +619,18 @@ specifications() ->
                     case_sensitive => true,
                     native_name => <<"distribution name">>,
                     note =>
-                        <<"The name is the distribution name and is case sensitive. A distribution name MUST NOT contain the string '::'">>,
+                        <<"The name is the distribution name and is case sensitive. A distribution name shall not contain the string '::'">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
                 #{
                     native_name => <<"CPAN author/publisher ID (CPANID)">>,
                     note =>
-                        <<"When present, it represents the CPAN author/publisher ID (CPANID) and MUST be uppercase. It is appropriate to use 'namespace' for compatibility with existing CPAN purl producers/consumers or when a workflow explicitly requires author-scoped identifiers. For new identifiers, the 'author' qualifier is the preferred way to specify the author/publisher. When 'version' is omitted, author scoping via 'namespace' MAY be ambiguous because a distribution can change maintainers over time.">>,
+                        <<"When present, it represents the CPAN author/publisher ID (CPANID) and shall be uppercase. It is appropriate to use 'namespace' for compatibility with existing CPAN purl producers/consumers or when a workflow explicitly requires author-scoped identifiers. For new identifiers, the 'author' qualifier is the preferred way to specify the author/publisher. When 'version' is omitted, author scoping via 'namespace' may be ambiguous because a distribution can change maintainers over time.">>,
                     requirement => <<"optional">>
                 },
             note =>
-                <<"The PURL 'name' MUST be the CPAN distribution name (case sensitive) and MUST NOT contain the '::' separator (module name). The CPAN author/publisher ID (CPANID) is OPTIONAL: when needed, it SHOULD be provided using the 'author' qualifier. The PURL 'namespace' is OPTIONAL and, when present, represents the CPANID and MUST be uppercase; it MAY be used for compatibility with existing identifiers or tooling. When PURL 'version' is omitted, author scoping (via 'author' qualifier or 'namespace') MAY be ambiguous because a distribution can change maintainers over time.">>,
+                <<"The PURL 'name' shall be the CPAN distribution name (case sensitive) and shall not contain the '::' separator (module name). The CPAN author/publisher ID (CPANID) is OPTIONAL: when needed, it should be provided using the 'author' qualifier. The PURL 'namespace' is OPTIONAL and, when present, represents the CPANID and shall be uppercase; it may be used for compatibility with existing identifiers or tooling. When PURL 'version' is omitted, author scoping (via 'author' qualifier or 'namespace') may be ambiguous because a distribution can change maintainers over time.">>,
             qualifiers_definition =>
                 [
                     #{
@@ -734,7 +734,7 @@ specifications() ->
                 #{
                     case_sensitive => false,
                     native_name => <<"name">>,
-                    note => <<"The name is not case sensitive and must be lowercased.">>,
+                    note => <<"The name is not case sensitive and shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -742,7 +742,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"vendor">>,
                     note =>
-                        <<"The namespace is the \"vendor\" name such as \"debian\" or \"ubuntu\". It is not case sensitive and must be lowercased.">>,
+                        <<"The namespace is the \"vendor\" name such as \"debian\" or \"ubuntu\". It is not case sensitive and shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             qualifiers_definition =>
@@ -939,7 +939,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"repository name">>,
                     note =>
-                        <<"The name is the repository name. It is not case sensitive and must be lowercased.">>,
+                        <<"The name is the repository name. It is not case sensitive and shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -947,7 +947,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"user or organization">>,
                     note =>
-                        <<"The namespace is the user or organization. It is not case sensitive and must be lowercased.">>,
+                        <<"The namespace is the user or organization. It is not case sensitive and shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             repository =>
@@ -978,13 +978,13 @@ specifications() ->
             name_definition =>
                 #{
                     case_sensitive => true,
-                    note => <<"The name must be lowercased.">>,
+                    note => <<"The name shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
                 #{
                     case_sensitive => true,
-                    note => <<"The namespace must be lowercased.">>,
+                    note => <<"The namespace shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             note =>
@@ -1061,7 +1061,7 @@ specifications() ->
                 #{
                     case_sensitive => false,
                     native_name => <<"name">>,
-                    note => <<"The name is not case sensitive and must be lowercased.">>,
+                    note => <<"The name is not case sensitive and shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -1069,7 +1069,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"organization for private packages">>,
                     note =>
-                        <<"The namespace is optional; it may be used to specify the organization for private packages on hex.pm. It is not case sensitive and must be lowercased.">>,
+                        <<"The namespace is optional; it may be used to specify the organization for private packages on hex.pm. It is not case sensitive and shall be lowercased.">>,
                     requirement => <<"optional">>
                 },
             repository =>
@@ -1120,7 +1120,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"model revision Git commit hash">>,
                     note =>
-                        <<"The version is the model revision Git commit hash. It is case insensitive and must be lowercased in the package URL.">>,
+                        <<"The version is the model revision Git commit hash. It is case insensitive and shall be lowercased in the package URL.">>,
                     requirement => <<"optional">>
                 }
         },
@@ -1214,7 +1214,7 @@ specifications() ->
                     native_name =>
                         <<"full package version, including module version and rockspec revision">>,
                     note =>
-                        <<"The full LuaRocks package version, including module version and rockspec revision. It is case sensitive, and lowercase must be used to avoid compatibility issues with older LuaRocks versions. The full version number is required to uniquely identify a version.">>,
+                        <<"The full LuaRocks package version, including module version and rockspec revision. It is case sensitive, and lowercase shall be used to avoid compatibility issues with older LuaRocks versions. The full version number is required to uniquely identify a version.">>,
                     requirement => <<"optional">>
                 }
         },
@@ -1294,7 +1294,7 @@ specifications() ->
             name_definition =>
                 #{
                     note =>
-                        <<"The name is the model name. Case sensitivity depends on the server implementation, such as for Azure ML, it is case sensitive and must be kept as-is in the package URL; and for Databricks, it is case insensitive and must be lowercased in the package URL.">>,
+                        <<"The name is the model name. Case sensitivity depends on the server implementation, such as for Azure ML, it is case sensitive and shall be kept as-is in the package URL; and for Databricks, it is case insensitive and shall be lowercased in the package URL.">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -1344,7 +1344,7 @@ specifications() ->
                     case_sensitive => true,
                     native_name => <<"name">>,
                     note =>
-                        <<"The package.json spec changed in 2015 to require that a new package 'must not have uppercase letters in the name', but old packages with mixed case names were \"grandfathered in\".">>,
+                        <<"The package.json spec changed in 2015 to require that a new package 'shall not have uppercase letters in the name', but old packages with mixed case names were \"grandfathered in\".">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -1421,7 +1421,7 @@ specifications() ->
                 #{
                     case_sensitive => false,
                     note =>
-                        <<"The name is not case sensitive and must be lowercased. The name is the last fragment of the repository name. For example if the repository name is library/debian then the name is debian.">>,
+                        <<"The name is not case sensitive and shall be lowercased. The name is the last fragment of the repository name. For example if the repository name is library/debian then the name is debian.">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -1452,7 +1452,7 @@ specifications() ->
             repository =>
                 #{
                     note =>
-                        <<"There is no canonical package repository for OCI artifacts. Therefore oci purls must be registry agnostic by default. To specify the repository, provide a repository_url value.">>,
+                        <<"There is no canonical package repository for OCI artifacts. Therefore oci purls shall be registry agnostic by default. To specify the repository, provide a repository_url value.">>,
                     use_repository => true
                 },
             type => <<"oci">>,
@@ -1517,12 +1517,12 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"name">>,
                     note =>
-                        <<"The OTP application name from the `.app` file; it is case-insensitive and MUST be lower-cased.">>,
+                        <<"The OTP application name from the `.app` file; it is case-insensitive and shall be lower-cased.">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
                 #{
-                    note => <<"The component is unused and MUST be empty">>,
+                    note => <<"The component is unused and shall be empty">>,
                     requirement => <<"prohibited">>
                 },
             note =>
@@ -1619,7 +1619,7 @@ specifications() ->
                             <<"Replace dot . with underscore _ when used in distribution (sdist, wheel) names">>
                         ],
                     note =>
-                        <<"PyPI treats - and _ as the same character and is not case sensitive. Therefore a PyPI package name must be lowercased and underscore _ replaced with a dash -. Note that PyPI itself is preserving the case of package names. When used in distribution and wheel names, the dot . is replaced with an underscore _">>,
+                        <<"PyPI treats - and _ as the same character and is not case sensitive. Therefore a PyPI package name shall be lowercased and underscore _ replaced with a dash -. Note that PyPI itself is preserving the case of package names. When used in distribution and wheel names, the dot . is replaced with an underscore _">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -1665,7 +1665,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"vendor">>,
                     note =>
-                        <<"The namespace is the vendor of the package. It is not case sensitive and must be lowercased.">>,
+                        <<"The namespace is the vendor of the package. It is not case sensitive and shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             repository =>
@@ -1699,7 +1699,7 @@ specifications() ->
                     case_sensitive => false,
                     native_name => <<"vendor">>,
                     note =>
-                        <<"The namespace is the vendor such as Fedora or OpenSUSE. It is not case sensitive and must be lowercased.">>,
+                        <<"The namespace is the vendor such as Fedora or OpenSUSE. It is not case sensitive and shall be lowercased.">>,
                     requirement => <<"required">>
                 },
             qualifiers_definition =>
@@ -1739,7 +1739,7 @@ specifications() ->
                 <<"PURL type for ISO-IEC 19770-2 Software Identification (SWID) tags.">>,
             examples =>
                 [
-                    <<"pkg:swid/Acme/example.com/Enterprise+Server@1.0.0?tag_id=75b8c285-fa7b-485b-b199-4745e3004d0d">>,
+                    <<"pkg:swid/Acme/example.com/Enterprise%2BServer@1.0.0?tag_id=75b8c285-fa7b-485b-b199-4745e3004d0d">>,
                     <<"pkg:swid/Fedora@29?tag_id=org.fedoraproject.Fedora-29">>,
                     <<"pkg:swid/Adobe%2BSystems%2BIncorporated/Adobe%2BInDesign@CC?tag_id=CreativeCloud-CS6-Win-GM-MUL">>
                 ],
@@ -1756,7 +1756,7 @@ specifications() ->
                     case_sensitive => true,
                     native_name => <<"softwareCreator">>,
                     note =>
-                        <<"The namespace is the optional name and regid of the entity with a role of softwareCreator. If specified, name is required and is the first segment in the namespace. If regid is known, it must be specified as the second segment in the namespace. A maximum of two segments are supported.">>,
+                        <<"The namespace is the optional name and regid of the entity with a role of softwareCreator. If specified, name is required and is the first segment in the namespace. If regid is known, it shall be specified as the second segment in the namespace. A maximum of two segments are supported.">>,
                     requirement => <<"optional">>
                 },
             note =>
@@ -1765,7 +1765,7 @@ specifications() ->
                 [
                     #{
                         description =>
-                            <<"The qualifier tag_id must not be empty and corresponds to the tagId as defined in the SWID SoftwareIdentity element. Per the SWID specification, GUIDs are recommended. If a GUID is used, it must be lowercase. If a GUID is not used, the tag_id qualifier is case aware but not case sensitive.">>,
+                            <<"The qualifier tag_id shall not be empty and corresponds to the tagId as defined in the SWID SoftwareIdentity element. Per the SWID specification, GUIDs are recommended. If a GUID is used, it shall be lowercase. If a GUID is not used, the tag_id qualifier is case aware but not case sensitive.">>,
                         key => <<"tag_id">>,
                         requirement => <<"required">>
                     },
@@ -1870,7 +1870,7 @@ specifications() ->
                 },
             namespace_definition => #{requirement => <<"prohibited">>},
             note =>
-                <<"A purl may carry extra qualifiers that describe the context in which the package is used, such as build configuration or platform. Parsers must tolerate these and may ignore any they do not expect. The `vcs_url` common qualifier carries the port's version-control URL in pip VCS form, for example `git+https://github.com/microsoft/vcpkg@<git-tree>`. Its git-tree pins the exact port recipe. The `features` qualifier, a comma-separated list of enabled vcpkg feature names, records which optional features were enabled at build time; it is informational and not currently normative.">>,
+                <<"A purl may carry extra qualifiers that describe the context in which the package is used, such as build configuration or platform. Parsers shall tolerate these and may ignore any they do not expect. The `vcs_url` common qualifier carries the port's version-control URL in pip VCS form, for example `git+https://github.com/microsoft/vcpkg@<git-tree>`. Its git-tree pins the exact port recipe. The `features` qualifier, a comma-separated list of enabled vcpkg feature names, records which optional features were enabled at build time; it is informational and not currently normative.">>,
             qualifiers_definition =>
                 [
                     #{
@@ -1958,7 +1958,7 @@ specifications() ->
             repository =>
                 #{
                     default_repository_url =>
-                        <<"https://marketplace.visualstudio.com/vscode-extension">>,
+                        <<"https://marketplace.visualstudio.com/vscode">>,
                     use_repository => true
                 },
             type => <<"vscode-extension">>,
@@ -2006,7 +2006,7 @@ specifications() ->
                 [
                     #{
                         description =>
-                            <<"The GIT URL of the layer. In example: https:%2F%2Fgit.openembedded.org%2Fopenembedded-core or https:%2F%2Fgithub.com%2Fakuster%2Fmeta-odroid. The URL scheme is mandatory and must be one of https, http, ssh, or git.">>,
+                            <<"The GIT URL of the layer. In example: https:%2F%2Fgit.openembedded.org%2Fopenembedded-core or https:%2F%2Fgithub.com%2Fakuster%2Fmeta-odroid. The URL scheme is mandatory and shall be one of https, http, ssh, or git.">>,
                         key => <<"repository_url">>,
                         requirement => <<"optional">>
                     },

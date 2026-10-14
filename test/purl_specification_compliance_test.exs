@@ -2,7 +2,7 @@
 excluded_tests = [
   # Case Sensitivity described in text, but not specified
   {"mlflow-test", "parse", "MLflow model tracked in Azure Databricks (case insensitive)"},
-  {"mlflow-test", "roundtrip",
+  {"mlflow-test", "validate",
    "MLflow model tracked in Azure Databricks (case insensitive). Roundtrip an input purl to canonical."},
 
   # Case Sensitive test contradicts the specification
@@ -19,10 +19,14 @@ excluded_tests = [
   # but "/" is the namespace separator in the purl grammar, so it must be encoded
   # as %2F. One fixture is also plainly corrupt: it expects "forgejoforgejo/",
   # with the slash misplaced.
-  {"git-test", "roundtrip", "git namespace and name should be lowercased. Roundtrip an input purl to canonical."},
   {"git-test", "parse", "Parse test for PURL type: git"},
   {"git-test", "build", "Build test  for PURL type: git"},
-  {"git-test", "roundtrip", "Roundtrip test for PURL type: git"}
+  {"git-test", "validate", "git namespace and name should be lowercased. Validate an input purl."},
+
+  # A "required" test with a qualifier key that is not lowercase must fail, see
+  # https://github.com/package-url/purl-spec/issues/942. The gem and rpm fixtures
+  # were fixed upstream, the maven one was not.
+  {"maven-test", "parse", "maven pom reference"}
 ]
 
 parameters =
@@ -31,15 +35,7 @@ parameters =
       # credo:disable-for-next-line Credo.Check.Warning.UnsafeToAtom
       test_suite = file |> File.read!() |> Jason.decode!(keys: :atoms),
       %{"$schema": schema, tests: tests} = test_suite,
-      true =
-        match?(
-          schema
-          when schema in [
-                 "https://packageurl.org/schemas/purl-test.schema-0.1.json",
-                 "https://packageurl.org/schemas/purl-test.schema-1.0.json"
-               ],
-          schema
-        ),
+      "https://packageurl.org/schemas/purl-test.schema-0.2.json" = schema,
       %{description: test_description, test_type: test_type} = test <- tests,
       {test_file_name, test_type, test_description} not in excluded_tests do
     %{
@@ -63,12 +59,12 @@ defmodule PurlSpecificationComplianceTest do
   @spec run_test(test :: map()) :: :ok
   defp run_test(test)
 
-  defp run_test(%{test_type: "parse", expected_failure: true, input: input}) do
-    assert {:error, _reason} = Purl.new(input)
+  defp run_test(%{test_type: "parse", expected_failure: true, input: input} = test) do
+    assert {:error, _reason} = Purl.new(input, parse_options(test))
   end
 
-  defp run_test(%{test_type: "parse", expected_failure: false, input: input, expected_output: expected_output}) do
-    assert {:ok, purl} = Purl.new(input)
+  defp run_test(%{test_type: "parse", expected_failure: false, input: input, expected_output: expected_output} = test) do
+    assert {:ok, purl} = Purl.new(input, parse_options(test))
 
     assert Purl.equal?(purl, test_components_to_purl(expected_output))
   end
@@ -77,25 +73,32 @@ defmodule PurlSpecificationComplianceTest do
     # Skip test, this is not a valid case
   end
 
-  defp run_test(%{test_type: "build", expected_failure: true, input: input}) do
+  defp run_test(%{test_type: "build", expected_failure: true, input: input} = test) do
     result =
-      with {:ok, purl} <- input |> test_components_to_purl() |> Purl.new(),
+      with {:ok, purl} <- input |> test_components_to_purl() |> Purl.new(parse_options(test)),
            do: {:ok, Purl.to_string(purl)}
 
     assert {:error, _reason} = result
   end
 
-  defp run_test(%{test_type: "build", expected_failure: false, input: input, expected_output: expected_output}) do
-    assert {:ok, purl} = input |> test_components_to_purl() |> Purl.new()
+  defp run_test(%{test_type: "build", expected_failure: false, input: input, expected_output: expected_output} = test) do
+    assert {:ok, purl} = input |> test_components_to_purl() |> Purl.new(parse_options(test))
     assert Purl.to_string(purl) == expected_output
   end
 
-  defp run_test(%{test_type: "roundtrip", input: input, expected_output: expected_output}) do
-    assert {:ok, purl} = Purl.new(input)
+  defp run_test(%{test_type: "validate", input: input, expected_output: expected_output} = test) do
+    assert {:ok, purl} = Purl.new(input, parse_options(test))
     assert Purl.to_string(purl) == expected_output
   end
 
   defp run_test(test), do: raise("Unsupported test type: #{test.test_type}")
+
+  # The test suite docs define "required" tests as conformance tests: input that
+  # is not in canonical form must fail unless the standard names a normalization
+  # exception. "recommended" tests show how to normalize such input instead.
+  @spec parse_options(test :: map()) :: [Purl.parse_option()]
+  defp parse_options(%{test_group: "required"}), do: [strict: true]
+  defp parse_options(%{test_group: "recommended"}), do: [strict: false]
 
   @spec test_components_to_purl(components :: map()) :: Purl.t()
   defp test_components_to_purl(components) do

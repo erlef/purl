@@ -195,22 +195,41 @@ defmodule Purl do
   @spec to_uri(purl :: t()) :: URI.t()
   def to_uri(%Purl{} = purl), do: purl |> Purl.to_record() |> :purl.to_uri() |> then(&struct!(URI, &1))
 
+  @typedoc """
+  Options for `new/2`
+
+  * `:strict` - Reject input that is not in canonical form where the
+    specification requires the canonical form. Defaults to `false`.
+    Currently this rejects qualifier keys that are not lowercase.
+  """
+  @typedoc since: "0.6.0"
+  @type parse_option() :: {:strict, boolean()}
+
   @doc """
   Creates a new purl struct from a `Purl`, `URI` or string.
+
+  See `t:parse_option/0` for the available options.
 
   ## Examples
 
       iex> Purl.new("pkg:hex/purl")
       {:ok, %Purl{type: "hex", name: "purl"}}
 
+      iex> Purl.new("pkg:hex/purl?Key=value")
+      {:ok, %Purl{type: "hex", name: "purl", qualifiers: %{"key" => "value"}}}
+
+      iex> Purl.new("pkg:hex/purl?Key=value", strict: true)
+      {:error, %Purl.Error.InvalidField{field: :qualifiers, value: "Key"}}
+
   """
-  @spec new(purl :: String.t() | URI.t() | t()) :: {:ok, t()} | {:error, parse_error()}
-  def new(purl)
-  def new(%Purl{} = purl), do: purl |> to_record() |> :purl.new() |> purl_response()
-  def new(purl), do: purl |> :purl.new() |> purl_response()
+  @spec new(purl :: String.t() | URI.t() | t(), options :: [parse_option()]) ::
+          {:ok, t()} | {:error, parse_error()}
+  def new(purl, options \\ [])
+  def new(%Purl{} = purl, options), do: purl |> to_record() |> :purl.new(Map.new(options)) |> purl_response()
+  def new(purl, options), do: purl |> :purl.new(Map.new(options)) |> purl_response()
 
   @doc """
-  Similar to `new/1` but raises `URI.Error`, `Purl.Error.InvalidField` or
+  Similar to `new/2` but raises `URI.Error`, `Purl.Error.InvalidField` or
   `Purl.Error.InvalidURI` if an invalid input is given.
 
   ## Examples
@@ -225,9 +244,9 @@ defmodule Purl do
       ** (Purl.Error.InvalidField) invalid field type, \"hex*\" given
 
   """
-  @spec new!(purl :: String.t() | URI.t() | t()) :: t()
-  def new!(purl) do
-    case new(purl) do
+  @spec new!(purl :: String.t() | URI.t() | t(), options :: [parse_option()]) :: t()
+  def new!(purl, options \\ []) do
+    case new(purl, options) do
       {:ok, purl} -> purl
       {:error, reason} -> raise reason
     end

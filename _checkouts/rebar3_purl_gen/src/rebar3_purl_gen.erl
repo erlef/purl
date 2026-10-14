@@ -11,8 +11,7 @@
 -define(TYPE_DIR, "priv/spec/types").
 
 -define(SUPPORTED_SCHEMAS, [
-    <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
-    <<"https://packageurl.org/schemas/purl-type.schema-1.0.json">>
+    <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>
 ]).
 
 -spec init(State :: term()) -> {ok, term()}.
