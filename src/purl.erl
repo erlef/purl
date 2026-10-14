@@ -470,12 +470,12 @@ Lookup Type Specification
       #{requirement => <<"optional">>,case_sensitive => false,
         normalization_rules => [],
         note =>
-            <<"The namespace is optional; it may be used to specify the organization for private packages on hex.pm. It is not case sensitive and must be lowercased.">>,
+            <<"The namespace is optional; it may be used to specify the organization for private packages on hex.pm. It is not case sensitive and shall be lowercased.">>,
         native_name => <<"organization for private packages">>},
   name_definition =>
       #{requirement => <<"required">>,case_sensitive => false,
         normalization_rules => [],
-        note => <<"The name is not case sensitive and must be lowercased.">>,
+        note => <<"The name is not case sensitive and shall be lowercased.">>,
         native_name => <<"name">>},
   version_definition =>
       #{requirement => <<"optional">>,case_sensitive => true,
