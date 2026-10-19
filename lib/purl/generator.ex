@@ -17,6 +17,7 @@ with {:module, StreamData} <- Code.ensure_loaded(StreamData) do
         [?a..?z, ?A..?Z, ?0..?9, ?., ?+, ?-]
         |> string(min_length: 1, max_length: 20)
         |> require_letter_start()
+        |> filter(&(not type_has_permitted_characters?(&1)))
 
       # Exclude types with permitted_characters constraints since generating
       # random strings that match arbitrary regexes is not feasible
@@ -31,7 +32,7 @@ with {:module, StreamData} <- Code.ensure_loaded(StreamData) do
 
     @spec type_has_permitted_characters?(Purl.type()) :: boolean()
     defp type_has_permitted_characters?(type) do
-      spec = :purl_type_registry.lookup(type)
+      spec = type |> String.downcase() |> :purl_type_registry.lookup()
 
       Map.has_key?(spec.namespace_definition, :permitted_characters) or
         Map.has_key?(spec.name_definition, :permitted_characters) or
@@ -110,7 +111,7 @@ with {:module, StreamData} <- Code.ensure_loaded(StreamData) do
     @spec purl :: StreamData.t(Purl.t())
     def purl do
       bind(type(), fn type ->
-        spec = :purl_type_registry.lookup(type)
+        spec = type |> String.downcase() |> :purl_type_registry.lookup()
 
         namespace_gen = namespace(lowercase: not spec.namespace_definition.case_sensitive)
         name_gen = name(lowercase: not spec.name_definition.case_sensitive)
