@@ -1,6 +1,6 @@
 {application, purl, [
     {description, "Implementation of the purl (package url) specification"},
-    {vsn, "0.5.1"},
+    {vsn, "0.5.2"},
     {registered, []},
     {applications, [kernel, stdlib]},
     {env, []},
