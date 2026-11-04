@@ -4,9 +4,6 @@ on:
       releaseName:
         required: false
         type: string
-    secrets:
-      HEX_API_KEY:
-        required: false
 
 name: "Publish"
 
@@ -20,6 +17,12 @@ jobs:
     runs-on: ubuntu-latest
 
     if: "${{ inputs.releaseName }}"
+
+    # The Workload Identity on hex.pm trusts this GitHub environment
+    environment: release
+    permissions:
+      contents: read
+      id-token: write # the OIDC token mix hex.publish exchanges with Workload Identity
 
     steps:
       - name: Harden Runner
@@ -49,5 +52,3 @@ jobs:
             mix_hex_publish-deps-${{ runner.os }}-${{ steps.setupBEAM.outputs.otp-version }}-
       - run: mix deps.get
       - run: mix hex.publish --yes
-        env:
-          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
