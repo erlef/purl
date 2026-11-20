@@ -228,8 +228,8 @@ See: https://github.com/package-url/purl-spec/blob/main/schemas/purl-type-defini
 
 ```erlang
 #{
-    '$schema' => <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
-    '$id' => <<"https://packageurl.org/types/hex-definition.json">>,
+    '$schema' => <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
+    '$id' => <<"https://packageurl.org/purl-types/hex-definition.json">>,
     type => <<"hex">>,
     type_name => <<"Hex">>
     %% ...
@@ -485,8 +485,8 @@ Lookup Type Specification
         normalization_rules => []},
   qualifiers_definition => [],
   '$schema' =>
-      <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
-  '$id' => <<"https://packageurl.org/types/hex-definition.json">>,
+      <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
+  '$id' => <<"https://packageurl.org/purl-types/hex-definition.json">>,
   type_name => <<"Hex">>,
   examples =>
       [<<"pkg:hex/jason@1.1.2">>,<<"pkg:hex/acme/foo@2.3.">>,

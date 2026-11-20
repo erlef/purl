@@ -81,6 +81,13 @@ apply_normalization_rule(<<"Apply kebab-case">>, Part) ->
 apply_normalization_rule(<<"It is not case sensitive and must be lowercased.">>, Part) ->
     %% Already handled in normalize_component
     Part;
+apply_normalization_rule(<<"The name shall be lowercase.">>, Part) ->
+    string:lowercase(Part);
+apply_normalization_rule(
+    <<"Replace runs of consecutive dash '-', underscore '_', or dot '.' characters with a single dash '-'">>,
+    Part
+) ->
+    re:replace(Part, <<"[-_.]+">>, <<"-">>, [global, unicode, {return, binary}]);
 apply_normalization_rule(_Rule, Part) ->
     %% Skip unknown rules
     Part.

@@ -5,7 +5,7 @@
 %% Do not edit it by hand. Run `rebar3 purl_gen` after updating the
 %% `priv/spec` submodule and commit the result.
 %%
-%% purl-spec revision: 7cd2d3442fb9c88155db17ada7c911b40ec22d41
+%% purl-spec revision: 26671718c3da7225c582a94da319c0c6c3a60cf7
 -module(purl_type_data).
 
 -moduledoc false.
@@ -16,9 +16,9 @@
 specifications() ->
     [
         #{
-            '$id' => <<"https://packageurl.org/types/alpm-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/alpm-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description =>
                 <<"Arch Linux packages and other users of the libalpm/pacman package manager.">>,
             examples =>
@@ -77,9 +77,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/apk-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/apk-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Alpine Linux APK-based packages">>,
             examples =>
                 [
@@ -128,9 +128,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/bazel-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/bazel-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description =>
                 <<"Bazel modules as specified at https://bazel.build/external/module">>,
             examples =>
@@ -188,9 +188,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/bitbucket-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/bitbucket-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Bitbucket-based packages">>,
             examples =>
                 [<<"pkg:bitbucket/birkenfeld/pygments-main@244fd47e07d1014f0aed9c">>],
@@ -225,9 +225,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/bitnami-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/bitnami-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Bitnami-based packages">>,
             examples =>
                 [
@@ -277,9 +277,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/brew-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/brew-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Homebrew packages for macOS and Linux">>,
             examples =>
                 [
@@ -337,9 +337,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/cargo-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/cargo-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Cargo packages for Rust">>,
             examples =>
                 [
@@ -371,9 +371,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/chrome-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/chrome-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description =>
                 <<"Chrome Browser Extensions. Note: there are currently no officially documented APIs, further there appears to be no way to query different versions of a package - there only seems to be responses on the latest version. To this end the version component of a chrome purl can be optional. Two known data sources are a sitemap which can be crawled to discover (some) extensions at https://chromewebstore.google.com/sitemap, and an 'updatecheck' API which you can read about here https://github.com/Rob--W/crxviewer , and perhaps here https://github.com/chromium/chromium/blob/main/docs/updater/protocol_3_1.md">>,
             examples =>
@@ -414,9 +414,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/cocoapods-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/cocoapods-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"CocoaPods pods">>,
             examples =>
                 [
@@ -456,9 +456,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/composer-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/composer-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Composer PHP packages">>,
             examples => [<<"pkg:composer/laravel/laravel@5.5.0">>],
             name_definition =>
@@ -488,9 +488,9 @@ specifications() ->
                 #{native_name => <<"version">>, requirement => <<"optional">>}
         },
         #{
-            '$id' => <<"https://packageurl.org/types/conan-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/conan-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description =>
                 <<"Conan C/C++ packages. The purl is designed to closely resemble the Conan-native <package-name>/<package-version>@<user>/<channel> syntax for package references as specified in https://docs.conan.io/en/1.46/cheatsheet.html#package-terminology">>,
             examples =>
@@ -559,9 +559,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/conda-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/conda-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"conda is for Conda packages">>,
             examples =>
                 [
@@ -600,9 +600,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/cpan-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/cpan-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Perl package distributions published on CPAN">>,
             examples =>
                 [
@@ -682,9 +682,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/cran-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/cran-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"CRAN R packages">>,
             examples =>
                 [
@@ -717,9 +717,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/deb-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/deb-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description =>
                 <<"Debian packages, Debian derivatives, and Ubuntu packages">>,
             examples =>
@@ -770,9 +770,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/docker-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/docker-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"for Docker images">>,
             examples =>
                 [
@@ -803,9 +803,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/gem-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/gem-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"RubyGems">>,
             examples =>
                 [
@@ -838,9 +838,9 @@ specifications() ->
                 #{native_name => <<"version">>, requirement => <<"optional">>}
         },
         #{
-            '$id' => <<"https://packageurl.org/types/generic-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/generic-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description =>
                 <<"The generic type is for plain, generic packages that do not fit anywhere else such as for \"upstream-from-distro\" packages. In particular this is handy for a plain version control repository such as a bare git repo in combination with a vcs_url.">>,
             examples =>
@@ -881,9 +881,9 @@ specifications() ->
             type_name => <<"Generic Package">>
         },
         #{
-            '$id' => <<"https://packageurl.org/types/git-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/git-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Git-based source packages">>,
             examples =>
                 [
@@ -925,9 +925,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/github-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/github-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"GitHub-based packages">>,
             examples =>
                 [
@@ -965,9 +965,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/golang-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/golang-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Go packages">>,
             examples =>
                 [
@@ -1011,9 +1011,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/hackage-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/hackage-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Haskell packages">>,
             examples =>
                 [
@@ -1046,9 +1046,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/hex-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/hex-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Hex packages">>,
             examples =>
                 [
@@ -1083,9 +1083,10 @@ specifications() ->
                 #{native_name => <<"version">>, requirement => <<"optional">>}
         },
         #{
-            '$id' => <<"https://packageurl.org/types/huggingfaces-definition.json">>,
+            '$id' =>
+                <<"https://packageurl.org/purl-types/huggingfaces-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Hugging Face ML models">>,
             examples =>
                 [
@@ -1125,9 +1126,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/julia-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/julia-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Julia packages">>,
             examples =>
                 [
@@ -1171,9 +1172,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/luarocks-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/luarocks-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Lua packages installed with LuaRocks">>,
             examples =>
                 [
@@ -1219,9 +1220,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/maven-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/maven-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"PURL type for Maven JARs and related artifacts.">>,
             examples =>
                 [
@@ -1282,9 +1283,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/mlflow-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/mlflow-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"MLflow ML models (Azure ML, Databricks, etc.)">>,
             examples =>
                 [
@@ -1329,9 +1330,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/npm-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/npm-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"PURL type for npm packages.">>,
             examples =>
                 [
@@ -1372,9 +1373,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/nuget-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/nuget-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"NuGet .NET packages">>,
             examples => [<<"pkg:nuget/EnterpriseLibrary.Common@6.0.1304">>],
             name_definition =>
@@ -1405,9 +1406,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/oci-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/oci-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description =>
                 <<"For artifacts stored in registries that conform to the OCI Distribution Specification https://github.com/opencontainers/distribution-spec including container images built by Docker and others">>,
             examples =>
@@ -1466,9 +1467,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/opam-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/opam-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Opam packages">>,
             examples =>
                 [<<"pkg:opam/ocaml-base-compiler@5.2.0">>, <<"pkg:opam/git@3/16.1">>],
@@ -1496,9 +1497,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/otp-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/otp-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description =>
                 <<"BEAM/OTP applications written in Elixir, Erlang, Gleam and other BEAM languages">>,
             examples =>
@@ -1569,9 +1570,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/pub-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/pub-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Dart and Flutter pub packages">>,
             examples => [<<"pkg:pub/characters@1.2.0">>, <<"pkg:pub/flutter@0.0.0">>],
             name_definition =>
@@ -1598,9 +1599,9 @@ specifications() ->
                 #{native_name => <<"version">>, requirement => <<"optional">>}
         },
         #{
-            '$id' => <<"https://packageurl.org/types/pypi-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/pypi-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Python packages">>,
             examples =>
                 [
@@ -1615,11 +1616,11 @@ specifications() ->
                     native_name => <<"name">>,
                     normalization_rules =>
                         [
-                            <<"Replace underscore _ with dash -">>,
-                            <<"Replace dot . with underscore _ when used in distribution (sdist, wheel) names">>
+                            <<"The name shall be lowercase.">>,
+                            <<"Replace runs of consecutive dash '-', underscore '_', or dot '.' characters with a single dash '-'">>
                         ],
                     note =>
-                        <<"PyPI treats - and _ as the same character and is not case sensitive. Therefore a PyPI package name shall be lowercased and underscore _ replaced with a dash -. Note that PyPI itself is preserving the case of package names. When used in distribution and wheel names, the dot . is replaced with an underscore _">>,
+                        <<"See the name normalization section of the Python Packaging User Guide: https://packaging.python.org/en/latest/specifications/name-normalization/ or the original PEP 503 definition (https://peps.python.org/pep-0503/#normalized-names)">>,
                     requirement => <<"required">>
                 },
             namespace_definition =>
@@ -1649,9 +1650,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/qpkg-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/qpkg-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"QNX packages">>,
             examples =>
                 [
@@ -1678,9 +1679,9 @@ specifications() ->
             type_name => <<"QNX package">>
         },
         #{
-            '$id' => <<"https://packageurl.org/types/rpm-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/rpm-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"RPM packages">>,
             examples =>
                 [
@@ -1732,9 +1733,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/swid-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/swid-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description =>
                 <<"PURL type for ISO-IEC 19770-2 Software Identification (SWID) tags.">>,
             examples =>
@@ -1811,9 +1812,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/swift-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/swift-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Swift packages">>,
             examples =>
                 [
@@ -1849,9 +1850,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/vcpkg-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/vcpkg-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Packages from the vcpkg C/C++ package manager.">>,
             examples =>
                 [
@@ -1893,6 +1894,12 @@ specifications() ->
                         key => <<"triplet">>,
                         native_name => <<"triplet">>,
                         requirement => <<"optional">>
+                    },
+                    #{
+                        description =>
+                            <<"The `vcs_url` common qualifier carries the port's version-control URL in pip VCS form, for example `git+https://github.com/microsoft/vcpkg@<git-tree>`. Its git-tree pins the exact port recipe.">>,
+                        key => <<"vcs_url">>,
+                        requirement => <<"optional">>
                     }
                 ],
             repository =>
@@ -1912,9 +1919,10 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/vscode-extension-definition.json">>,
+            '$id' =>
+                <<"https://packageurl.org/purl-types/vscode-extension-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"VS Code Extension packages">>,
             examples =>
                 [
@@ -1973,9 +1981,9 @@ specifications() ->
                 }
         },
         #{
-            '$id' => <<"https://packageurl.org/types/yocto-definition.json">>,
+            '$id' => <<"https://packageurl.org/purl-types/yocto-definition.json">>,
             '$schema' =>
-                <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
             description => <<"Yocto Project recipes">>,
             examples =>
                 [
