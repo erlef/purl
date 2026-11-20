@@ -12,8 +12,9 @@ serve_known_value_test() ->
     ?assertMatch(
         #{
             type := <<"hex">>,
-            '$schema' := <<"https://packageurl.org/schemas/purl-type-definition.schema-1.0.json">>,
-            '$id' := <<"https://packageurl.org/types/hex-definition.json">>,
+            '$schema' :=
+                <<"https://packageurl.org/purl-schemas/purl-type-definition.schema-1.1.json">>,
+            '$id' := <<"https://packageurl.org/purl-types/hex-definition.json">>,
             type_name := <<"Hex">>,
             repository :=
                 #{

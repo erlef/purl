@@ -26,7 +26,20 @@ excluded_tests = [
   # A "required" test with a qualifier key that is not lowercase must fail, see
   # https://github.com/package-url/purl-spec/issues/942. The gem and rpm fixtures
   # were fixed upstream, the maven one was not.
-  {"maven-test", "parse", "maven pom reference"}
+  {"maven-test", "parse", "maven pom reference"},
+
+  # These fixtures put the expected_message text in the subpath field. Other
+  # tests share their description, so the input selects them.
+  {"pypi-test", "parse", "pypi names have normalization rules.", "pkg:pypi/My.PyPI_.--._Package@1.11.1.dev1"},
+  {"pypi-test", "build", "pypi names have normalization rules.",
+   %{
+     type: "pypi",
+     namespace: nil,
+     name: "My.PyPI_.--._Package",
+     version: "1.11.1.dev1",
+     qualifiers: nil,
+     subpath: "Applied normalization_rules to convert input string to valid form."
+   }}
 ]
 
 parameters =
@@ -35,9 +48,10 @@ parameters =
       # credo:disable-for-next-line Credo.Check.Warning.UnsafeToAtom
       test_suite = file |> File.read!() |> Jason.decode!(keys: :atoms),
       %{"$schema": schema, tests: tests} = test_suite,
-      "https://packageurl.org/schemas/purl-test.schema-0.2.json" = schema,
-      %{description: test_description, test_type: test_type} = test <- tests,
-      {test_file_name, test_type, test_description} not in excluded_tests do
+      "https://packageurl.org/purl-schemas/purl-test.schema-0.2.json" = schema,
+      %{description: test_description, test_type: test_type, input: test_input} = test <- tests,
+      {test_file_name, test_type, test_description} not in excluded_tests,
+      {test_file_name, test_type, test_description, test_input} not in excluded_tests do
     %{
       spec_test_file: Path.relative_to_cwd(file),
       spec_test_name: test_file_name,
